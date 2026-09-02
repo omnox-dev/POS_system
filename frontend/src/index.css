@@ -1,0 +1,316 @@
+:root {
+  --wf-bg: #0f172a;
+  --wf-panel-bg: #1e293b;
+  --wf-card-bg: #0f172a;
+  --wf-border: #334155;
+  --wf-border-dashed: #475569;
+  --wf-text-main: #f8fafc;
+  --wf-text-muted: #94a3b8;
+  --wf-accent: #38bdf8;
+  --wf-accent-light: rgba(56, 189, 248, 0.1);
+  --wf-success: #22c55e;
+  --wf-warning: #f59e0b;
+  --wf-danger: #ef4444;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--wf-bg);
+  color: var(--wf-text-main);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* App Header & Wireframe Switcher */
+.app-header {
+  background-color: var(--wf-panel-bg);
+  border-bottom: 2px solid var(--wf-border);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--wf-accent);
+}
+
+.brand-badge {
+  background: var(--wf-accent-light);
+  border: 1px dashed var(--wf-accent);
+  color: var(--wf-accent);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.module-switcher {
+  display: flex;
+  gap: 8px;
+  background: var(--wf-bg);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--wf-border);
+}
+
+.switcher-btn {
+  background: transparent;
+  color: var(--wf-text-muted);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.switcher-btn.active {
+  background-color: var(--wf-panel-bg);
+  color: var(--wf-accent);
+  border: 1px solid var(--wf-border-dashed);
+}
+
+.switcher-btn:hover:not(.active) {
+  color: var(--wf-text-main);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Main Container */
+.main-container {
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Wireframe Panel & Card Containers */
+.wf-panel {
+  background-color: var(--wf-panel-bg);
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.wf-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--wf-border);
+}
+
+.wf-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wf-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.wf-card {
+  background-color: var(--wf-card-bg);
+  border: 1px solid var(--wf-border);
+  border-radius: 6px;
+  padding: 16px;
+  position: relative;
+  transition: border-color 0.2s ease;
+}
+
+.wf-card:hover {
+  border-color: var(--wf-accent);
+}
+
+.wf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+
+.wf-badge-normal { background: rgba(34, 197, 94, 0.15); color: var(--wf-success); border: 1px solid var(--wf-success); }
+.wf-badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--wf-warning); border: 1px solid var(--wf-warning); }
+.wf-badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--wf-danger); border: 1px solid var(--wf-danger); }
+.wf-badge-info { background: var(--wf-accent-light); color: var(--wf-accent); border: 1px solid var(--wf-accent); }
+
+/* Tables */
+.wf-table-container {
+  overflow-x: auto;
+}
+
+.wf-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.wf-table th, .wf-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--wf-border);
+}
+
+.wf-table th {
+  background-color: var(--wf-card-bg);
+  color: var(--wf-text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.wf-table tr:hover td {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Buttons & Inputs */
+.wf-btn {
+  background: var(--wf-panel-bg);
+  color: var(--wf-text-main);
+  border: 1px solid var(--wf-border);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.wf-btn-primary {
+  background-color: var(--wf-accent);
+  color: #0284c7;
+  color: #0f172a;
+  border: 1px solid var(--wf-accent);
+  font-weight: 700;
+}
+
+.wf-btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+.wf-btn-secondary {
+  background: var(--wf-card-bg);
+}
+
+.wf-btn-secondary:hover {
+  border-color: var(--wf-text-muted);
+}
+
+.wf-input {
+  background: var(--wf-card-bg);
+  border: 1px solid var(--wf-border);
+  color: var(--wf-text-main);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  width: 100%;
+}
+
+.wf-input:focus {
+  border-color: var(--wf-accent);
+}
+
+/* Receipt / Monospace box */
+.wf-receipt-box {
+  background-color: #020617;
+  border: 1px dashed var(--wf-border-dashed);
+  padding: 16px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #e2e8f0;
+}
+
+/* Flex utilities */
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.flex-gap-8 { display: flex; gap: 8px; align-items: center; }
+.flex-gap-16 { display: flex; gap: 16px; align-items: center; }
+
+/* Grid layout for Views */
+.view-grid-2 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* Modal Styling */
+.wf-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.wf-modal-card {
+  background-color: var(--wf-panel-bg);
+  border: 1px solid var(--wf-border);
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+/* Thermal Printer Isolation CSS Rule */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #printable-receipt, #printable-receipt * {
+    visibility: visible !important;
+  }
+  #printable-receipt {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 80mm !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+  }
+}
+
