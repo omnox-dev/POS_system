@@ -108,12 +108,19 @@ export async function processOrderBill(orderId, billingData) {
   return res.json();
 }
 
+// Export aliases for PosView compatibility
+export const billOrder = processOrderBill;
+export const fetchCustomerByPhone = lookupCustomerLoyalty;
+export const transferOrderTable = transferTable;
+export const payDigitalPayment = simulateDigitalPayment;
+
 export async function splitOrderBill(orderId, splitCount) {
   const res = await fetch(`${API_BASE}/pos/orders/${orderId}/split?split_count=${splitCount}`, {
     method: 'POST'
   });
   return res.json();
 }
+
 
 // Inventory & Recipe CRUD API
 export async function fetchInventoryItems() {
@@ -134,6 +141,16 @@ export async function fetchMenuItemsWithRecipes() {
   const res = await fetch(`${API_BASE}/inventory/menu-items`);
   return res.json();
 }
+
+export async function addMenuItem(itemData) {
+  const res = await fetch(`${API_BASE}/inventory/menu-items`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(itemData)
+  });
+  return res.json();
+}
+
 
 export async function addRecipeIngredient(recipeData) {
   const res = await fetch(`${API_BASE}/inventory/recipes`, {

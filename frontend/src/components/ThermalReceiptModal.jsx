@@ -1,12 +1,15 @@
 import React from 'react';
 import { Printer, X } from 'lucide-react';
 
-export default function ThermalReceiptModal({ order, onClose }) {
-  if (!order) return null;
+export default function ThermalReceiptModal({ isOpen = true, billingData, order, onClose }) {
+  if (isOpen === false) return null;
+  const targetOrder = billingData?.order || order || billingData;
+  if (!targetOrder) return null;
 
   const handlePrint = () => {
     window.print();
   };
+
 
   return (
     <div className="wf-modal-overlay">
@@ -38,18 +41,18 @@ export default function ThermalReceiptModal({ order, onClose }) {
           <div style={{ borderTop: '1px dashed #000', margin: '8px 0' }} />
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>Order #:</span> <strong>{order.order_number}</strong>
+            <span>Order #:</span> <strong>{targetOrder.order_number}</strong>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>Type:</span> <span>{order.order_type}</span>
+            <span>Type:</span> <span>{targetOrder.order_type}</span>
           </div>
-          {order.table_id && (
+          {targetOrder.table_id && (
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Table:</span> <strong>Table #{order.table_id}</strong>
+              <span>Table:</span> <strong>Table #{targetOrder.table_id}</strong>
             </div>
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span>Date:</span> <span>{new Date(order.created_at || Date.now()).toLocaleString()}</span>
+            <span>Date:</span> <span>{new Date(targetOrder.created_at || Date.now()).toLocaleString()}</span>
           </div>
 
           <div style={{ borderTop: '1px dashed #000', margin: '8px 0' }} />
@@ -63,7 +66,7 @@ export default function ThermalReceiptModal({ order, onClose }) {
               </tr>
             </thead>
             <tbody>
-              {order.items && order.items.map((item, idx) => (
+              {targetOrder.items && targetOrder.items.map((item, idx) => (
                 <tr key={idx}>
                   <td style={{ width: '10%' }}>{item.quantity}x</td>
                   <td style={{ width: '65%' }}>{item.menu_item_name}</td>
@@ -77,32 +80,33 @@ export default function ThermalReceiptModal({ order, onClose }) {
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>Subtotal:</span>
-            <span>₹{order.subtotal ? order.subtotal.toFixed(2) : '0.00'}</span>
+            <span>₹{targetOrder.subtotal ? targetOrder.subtotal.toFixed(2) : '0.00'}</span>
           </div>
-          {order.discount_amount > 0 && (
+          {targetOrder.discount_amount > 0 && (
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#c00' }}>
               <span>Discount / Loyalty:</span>
-              <span>-₹{order.discount_amount.toFixed(2)}</span>
+              <span>-₹{targetOrder.discount_amount.toFixed(2)}</span>
             </div>
           )}
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>Tax (GST 5%):</span>
-            <span>₹{order.tax_amount ? order.tax_amount.toFixed(2) : '0.00'}</span>
+            <span>₹{targetOrder.tax_amount ? targetOrder.tax_amount.toFixed(2) : '0.00'}</span>
           </div>
 
           <div style={{ borderTop: '2px solid #000', margin: '8px 0' }} />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '14px' }}>
             <span>GRAND TOTAL:</span>
-            <span>₹{order.total_amount ? order.total_amount.toFixed(2) : order.subtotal ? order.subtotal.toFixed(2) : '0.00'}</span>
+            <span>₹{targetOrder.total_amount ? targetOrder.total_amount.toFixed(2) : targetOrder.subtotal ? targetOrder.subtotal.toFixed(2) : '0.00'}</span>
           </div>
 
-          {order.payment_mode && (
+          {targetOrder.payment_mode && (
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', marginTop: '4px' }}>
               <span>Paid via:</span>
-              <span>{order.payment_mode}</span>
+              <span>{targetOrder.payment_mode}</span>
             </div>
           )}
+
 
           <div style={{ borderTop: '1px dashed #000', margin: '12px 0 8px 0' }} />
           <div style={{ textAlign: 'center', fontSize: '10px', fontStyle: 'italic' }}>

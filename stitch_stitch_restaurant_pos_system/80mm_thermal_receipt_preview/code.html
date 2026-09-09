@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>80mm Thermal Receipt Preview - BistroFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#001908",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#3d4756",
+                        "surface-bright": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffdcc5",
+                        "on-surface-variant": "#44474c",
+                        "on-error-container": "#93000a",
+                        "on-surface": "#191c1d",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary-container": "#8690a1",
+                        "primary-container": "#1f2937",
+                        "background": "#f8f9fa",
+                        "inverse-surface": "#2e3132",
+                        "secondary-container": "#fc8f34",
+                        "on-tertiary-container": "#16a558",
+                        "surface-dim": "#d9dadb",
+                        "outline-variant": "#c5c6cc",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#003015",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-tint": "#555f6f",
+                        "secondary-fixed-dim": "#ffb783",
+                        "primary": "#0a1422",
+                        "secondary": "#944a00",
+                        "surface-container": "#edeeef",
+                        "inverse-primary": "#bdc7d9",
+                        "on-background": "#191c1d",
+                        "on-secondary-container": "#663100",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f3f4f5",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f8f9fa",
+                        "on-secondary-fixed": "#301400",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#713700",
+                        "on-tertiary-fixed": "#00210c",
+                        "tertiary-fixed": "#7efba4",
+                        "tertiary-fixed-dim": "#61de8a",
+                        "on-primary-fixed": "#121c2a",
+                        "on-tertiary-fixed-variant": "#005228",
+                        "primary-fixed-dim": "#bdc7d9",
+                        "outline": "#75777c",
+                        "primary-fixed": "#d9e3f6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "1rem",
+                        "stack-lg": "1.5rem",
+                        "touch-target-min": "48px",
+                        "margin-desktop": "2rem",
+                        "stack-sm": "0.5rem",
+                        "gutter": "1rem",
+                        "stack-md": "1rem"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-bold": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "data-mono": ["JetBrains Mono", "monospace"],
+                        "headline-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .serrated-top {
+            background-image: radial-gradient(circle at 10px 0, transparent 10px, #ffffff 11px);
+            background-size: 20px 20px;
+            background-repeat: repeat-x;
+            background-position: top;
+            padding-top: 15px;
+        }
+        .serrated-bottom {
+            background-image: radial-gradient(circle at 10px 20px, transparent 10px, #ffffff 11px);
+            background-size: 20px 20px;
+            background-repeat: repeat-x;
+            background-position: bottom;
+            padding-bottom: 15px;
+        }
+        .thermal-paper {
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            /* Simulating slightly textured thermal paper */
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        }
+        .dotted-line {
+            border-bottom: 1px dashed #c5c6cc;
+            width: 100%;
+            margin: 1rem 0;
+        }
+        .receipt-content {
+            font-family: 'JetBrains Mono', monospace;
+            color: #191c1d;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-low min-h-screen flex items-center justify-center p-4">
+<main class="w-full max-w-md mx-auto flex flex-col items-center gap-stack-lg">
+<!-- Header Actions -->
+<div class="w-full flex justify-between items-center px-4">
+<button class="flex items-center gap-2 text-on-surface-variant hover:bg-surface-variant p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+<span class="font-label-bold text-label-bold">Back to POS</span>
+</button>
+<div class="flex items-center gap-2">
+<button aria-label="Share Receipt" class="flex items-center justify-center w-[48px] h-[48px] text-on-surface-variant hover:bg-surface-variant rounded-full transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">share</span>
+</button>
+<button aria-label="Email Receipt" class="flex items-center justify-center w-[48px] h-[48px] text-on-surface-variant hover:bg-surface-variant rounded-full transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">mail</span>
+</button>
+</div>
+</div>
+<!-- The Thermal Receipt -->
+<div class="w-full max-w-[320px] thermal-paper serrated-top serrated-bottom relative overflow-hidden receipt-content text-data-mono">
+<!-- Receipt Header -->
+<div class="flex flex-col items-center text-center p-4 pt-6">
+<img class="w-24 h-24 object-contain mb-4 filter grayscale contrast-150" data-alt="A minimalist, high-contrast black and white logo for a modern restaurant named BistroFlow. The logo features clean geometric lines forming an abstract dining plate and subtle motion waves indicating flow. The design is stark and suitable for low-resolution thermal printing, maintaining a professional corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRs_5x7H6UIFhyGItbhOuyz808pKh5KxtQLbw_HHcPTxvXKs0k2eF_YuVGzeRjXd5zOBiIUhmnk4iqGnIOF2J4K81Jsn5gPkjTtNI4jGwf2ae58_PYpVzEZTSBB_wSMgCrNH2B-0Zkvf61YcTi8vRf9t4mVs0U-bfXGxi1de1iu_GccWuHIXohqqmP5dAbWAsaZpFsLZKTYDrP_Vp0RPF5N0Sdq7cCeHWkRnJLkC4uXun0NeR7TJv1"/>
+<h1 class="text-xl font-bold uppercase tracking-wider mb-2">BistroFlow</h1>
+<p class="text-sm">123 Culinary Ave, Suite 100</p>
+<p class="text-sm">Tech District, Metro City</p>
+<p class="text-sm mt-1">Tel: (555) 019-8472</p>
+<p class="text-sm mt-1 font-bold">GSTIN: 22AAAAA0000A1Z5</p>
+</div>
+<div class="px-4">
+<div class="dotted-line"></div>
+<!-- Metadata -->
+<div class="flex justify-between text-sm mb-1">
+<span>Ticket #: 4092</span>
+<span>Table: 14</span>
+</div>
+<div class="flex justify-between text-sm mb-1">
+<span>Date: 24-Oct-2023</span>
+<span>Time: 19:42</span>
+</div>
+<div class="flex justify-between text-sm">
+<span>Server: Alex M.</span>
+<span>Guests: 2</span>
+</div>
+<div class="dotted-line"></div>
+<!-- Column Headers -->
+<div class="flex justify-between text-sm font-bold mb-2">
+<span class="w-2/3">ITEM</span>
+<span class="w-1/6 text-center">QTY</span>
+<span class="w-1/6 text-right">AMT</span>
+</div>
+<!-- Items -->
+<div class="flex flex-col gap-2 text-sm">
+<div class="flex justify-between items-start">
+<span class="w-2/3 pr-2">Truffle Risotto</span>
+<span class="w-1/6 text-center">1</span>
+<span class="w-1/6 text-right">24.00</span>
+</div>
+<div class="flex justify-between items-start">
+<span class="w-2/3 pr-2">Seared Scallops</span>
+<span class="w-1/6 text-center">2</span>
+<span class="w-1/6 text-right">38.00</span>
+</div>
+<div class="flex justify-between items-start">
+<span class="w-2/3 pr-2">House Red Glass</span>
+<span class="w-1/6 text-center">2</span>
+<span class="w-1/6 text-right">18.00</span>
+</div>
+<div class="flex justify-between items-start">
+<span class="w-2/3 pr-2">Sparkling Water (L)</span>
+<span class="w-1/6 text-center">1</span>
+<span class="w-1/6 text-right">6.50</span>
+</div>
+</div>
+<div class="dotted-line"></div>
+<!-- Totals -->
+<div class="flex flex-col gap-1 text-sm">
+<div class="flex justify-between">
+<span>Subtotal</span>
+<span>86.50</span>
+</div>
+<div class="flex justify-between">
+<span>CGST (2.5%)</span>
+<span>2.16</span>
+</div>
+<div class="flex justify-between">
+<span>SGST (2.5%)</span>
+<span>2.16</span>
+</div>
+<div class="flex justify-between mt-2 text-lg font-bold">
+<span>TOTAL DUE</span>
+<span>$90.82</span>
+</div>
+</div>
+<div class="dotted-line"></div>
+<!-- Payment Info -->
+<div class="flex flex-col gap-1 text-sm">
+<div class="flex justify-between">
+<span>Paid by VISA</span>
+<span>XXXX-XXXX-XXXX-4921</span>
+</div>
+<div class="flex justify-between">
+<span>Auth Code</span>
+<span>9482A1</span>
+</div>
+</div>
+<div class="dotted-line"></div>
+<!-- Footer -->
+<div class="flex flex-col items-center text-center pb-6">
+<p class="text-sm font-bold mb-2">BistroFlow Rewards</p>
+<p class="text-sm">Points Earned: 90</p>
+<p class="text-sm mb-4">New Balance: 1,450</p>
+<p class="text-sm">Thank you for dining with us!</p>
+<p class="text-sm">Please come again.</p>
+<div class="mt-4">
+<!-- Simulated Barcode -->
+<div class="flex h-12 w-full justify-center gap-[2px]">
+<div class="w-1 bg-black h-full"></div>
+<div class="w-[2px] bg-black h-full"></div>
+<div class="w-2 bg-black h-full"></div>
+<div class="w-1 bg-black h-full"></div>
+<div class="w-[3px] bg-black h-full"></div>
+<div class="w-[1px] bg-black h-full"></div>
+<div class="w-2 bg-black h-full"></div>
+<div class="w-[2px] bg-black h-full"></div>
+<div class="w-1 bg-black h-full"></div>
+<div class="w-[3px] bg-black h-full"></div>
+<div class="w-2 bg-black h-full"></div>
+<div class="w-[1px] bg-black h-full"></div>
+<div class="w-[2px] bg-black h-full"></div>
+<div class="w-1 bg-black h-full"></div>
+<div class="w-2 bg-black h-full"></div>
+</div>
+<p class="text-xs mt-1">TXN-4092-8472-A</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Primary Action -->
+<div class="w-full max-w-[320px] pb-8">
+<button class="w-full h-[56px] flex items-center justify-center gap-2 bg-secondary text-on-secondary font-label-bold text-label-bold rounded-lg shadow-sm hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">print</span>
+                Print Thermal Ticket
+            </button>
+</div>
+</main>
+</body></html>

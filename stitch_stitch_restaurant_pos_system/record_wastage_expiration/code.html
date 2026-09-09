@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BistroFlow - Record Wastage &amp; Expiration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-container": "#16a558",
+                      "inverse-on-surface": "#f0f1f2",
+                      "tertiary-fixed": "#7efba4",
+                      "surface-container-high": "#e7e8e9",
+                      "primary-container": "#1f2937",
+                      "on-tertiary-fixed-variant": "#005228",
+                      "tertiary": "#001908",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed-variant": "#3d4756",
+                      "surface-container-highest": "#e1e3e4",
+                      "tertiary-fixed-dim": "#61de8a",
+                      "primary-fixed-dim": "#bdc7d9",
+                      "primary-fixed": "#d9e3f6",
+                      "on-primary-container": "#8690a1",
+                      "outline": "#75777c",
+                      "surface-variant": "#e1e3e4",
+                      "tertiary-container": "#003015",
+                      "inverse-surface": "#2e3132",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed": "#00210c",
+                      "secondary-fixed": "#ffdcc5",
+                      "primary": "#0a1422",
+                      "secondary-container": "#fc8f34",
+                      "surface-bright": "#f8f9fa",
+                      "on-error-container": "#93000a",
+                      "on-surface": "#191c1d",
+                      "inverse-primary": "#bdc7d9",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "on-primary-fixed": "#121c2a",
+                      "outline-variant": "#c5c6cc",
+                      "background": "#f8f9fa",
+                      "on-surface-variant": "#44474c",
+                      "on-background": "#191c1d",
+                      "on-secondary-fixed-variant": "#713700",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#555f6f",
+                      "on-secondary-container": "#663100",
+                      "secondary": "#944a00",
+                      "surface-container-low": "#f3f4f5",
+                      "surface-container": "#edeeef",
+                      "surface-dim": "#d9dadb",
+                      "error": "#ba1a1a",
+                      "surface": "#f8f9fa",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#301400",
+                      "secondary-fixed-dim": "#ffb783"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "1rem",
+                      "margin-desktop": "2rem",
+                      "margin-mobile": "1rem",
+                      "stack-md": "1rem",
+                      "stack-lg": "1.5rem",
+                      "touch-target-min": "48px",
+                      "stack-sm": "0.5rem"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-bold": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "data-mono": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "26px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-bold": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "data-mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="bg-primary dark:bg-primary h-screen w-64 flex flex-col fixed left-0 top-0 border-r border-outline-variant z-50">
+<div class="flex flex-col h-full py-gutter">
+<div class="px-gutter mb-stack-lg flex items-center gap-3">
+<img alt="BistroFlow Admin Logo" class="w-10 h-10 rounded-full bg-surface-container-high object-cover" data-alt="A minimalist, modern vector logo for BistroFlow, featuring a stylized fork and knife combined with an abstract flow or wave motif. The logo should use primary enterprise colors like deep navy and clean white, suitable for a professional restaurant management SaaS dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0XMdgHLjvsss-ctaQFaLSNQNJ9eo4B1H5Uh4qxafqf0NoSMFpfOy23SIos6E1Nw2Ino0alJKwfDbYlFRehPo3WK9dwhiD4iRtW1UjQZojFuLwQD2E6rtHctXZmNlobEGzAZtXjhcc3yI9WkZaVEIi-HLAYhmNeV-Hl-eLbd0S5dAnt5R3Me9uw5CCPwztuHN3Vb9pC3PHYQbSI_dPPz3oymjtklMlkbnB2RhESPhTmccGoLPo0m9X"/>
+<div>
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-primary dark:text-on-primary-fixed">BistroFlow</h1>
+<p class="font-label-sm text-label-sm text-on-primary-container">Management Suite</p>
+</div>
+</div>
+<button class="mx-gutter mb-stack-md bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed transition-colors duration-200 rounded h-touch-target-min font-label-bold text-label-bold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add</span>
+                Quick Action
+            </button>
+<div class="flex-1 overflow-y-auto px-2">
+<ul class="flex flex-col gap-1">
+<li>
+<a class="text-on-primary-container hover:text-on-primary hover:bg-primary-container transition-colors duration-200 flex items-center gap-3 px-3 py-2 rounded h-touch-target-min font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                            Dashboard
+                        </a>
+</li>
+<li>
+<a class="text-secondary-fixed bg-primary-container font-bold border-l-4 border-secondary-container flex items-center gap-3 px-3 py-2 rounded h-touch-target-min scale-95 transition-transform font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+                            Inventory
+                        </a>
+</li>
+<li>
+<a class="text-on-primary-container hover:text-on-primary hover:bg-primary-container transition-colors duration-200 flex items-center gap-3 px-3 py-2 rounded h-touch-target-min font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="point_of_sale">point_of_sale</span>
+                            POS Terminal
+                        </a>
+</li>
+<li>
+<a class="text-on-primary-container hover:text-on-primary hover:bg-primary-container transition-colors duration-200 flex items-center gap-3 px-3 py-2 rounded h-touch-target-min font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="countertops">countertops</span>
+                            Kitchen KDS
+                        </a>
+</li>
+<li>
+<a class="text-on-primary-container hover:text-on-primary hover:bg-primary-container transition-colors duration-200 flex items-center gap-3 px-3 py-2 rounded h-touch-target-min font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                            Reporting
+                        </a>
+</li>
+<li>
+<a class="text-on-primary-container hover:text-on-primary hover:bg-primary-container transition-colors duration-200 flex items-center gap-3 px-3 py-2 rounded h-touch-target-min font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                            Audit Logs
+                        </a>
+</li>
+</ul>
+</div>
+<div class="px-2 mt-auto">
+<div class="h-px bg-outline-variant my-2 mx-3"></div>
+<ul class="flex flex-col gap-1">
+<li>
+<a class="text-on-primary-container hover:text-on-primary hover:bg-primary-container transition-colors duration-200 flex items-center gap-3 px-3 py-2 rounded h-touch-target-min font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                            Settings
+                        </a>
+</li>
+<li>
+<a class="text-on-primary-container hover:text-on-primary hover:bg-primary-container transition-colors duration-200 flex items-center gap-3 px-3 py-2 rounded h-touch-target-min font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                            Support
+                        </a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden bg-surface">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-surface border-b border-outline-variant shadow-sm docked full-width top-0 sticky z-40">
+<div class="flex justify-between items-center h-16 px-margin-desktop">
+<div class="flex items-center gap-6">
+<span class="font-headline-md text-headline-md font-extrabold text-primary dark:text-primary-fixed">BistroFlow</span>
+<div class="relative hidden lg:block w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full h-10 pl-10 pr-4 rounded-full bg-surface-container-low border-none text-body-md focus:ring-2 focus:ring-secondary-container" placeholder="Search..." type="text"/>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-4">
+<a class="text-on-surface-variant hover:bg-surface-container-low px-3 py-2 rounded font-label-bold text-label-bold transition-colors" href="#">Live Floor</a>
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 px-3 py-2 font-label-bold text-label-bold opacity-80" href="#">Stock Alerts</a>
+<a class="text-on-surface-variant hover:bg-surface-container-low px-3 py-2 rounded font-label-bold text-label-bold transition-colors" href="#">Recent Sales</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="h-touch-target-min px-4 bg-secondary text-on-secondary rounded font-label-bold text-label-bold hover:bg-secondary-fixed-dim transition-colors hidden sm:block">
+                        Clock In/Out
+                    </button>
+<button class="w-10 h-10 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full hover:bg-surface-container-low flex items-center justify-center text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+</button>
+<img alt="Manager Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant cursor-pointer" data-alt="A professional headshot of a restaurant manager in a clean, modern bistro environment. High-key lighting, bright and airy. The person is wearing a neat apron over a collared shirt, exuding competence and approachability suitable for an enterprise SaaS profile avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALefbmGI9XoT8Pfn5HkHMPeIcGj1g7QSFiNxAheFJ6JuHicoXVRcA4mW4_QNMMjk13dkEB7U63FVlFuZXPYR-jaP373CFP-KYP48vNFHVGxtTPQ0R-XBF0OmxBkCz-4VcqhrtHjlcR4o88642G6f4MAgH-os5soU_AkHfqYN0_evWoCchdZ6MDkrBZLvcUnmuvvLvSSD-YxXc6tJxJoskgf-sx1U_puVgPXSEhefD3e6PZ66Fq9QpD"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-desktop bg-background">
+<div class="max-w-4xl mx-auto space-y-stack-lg">
+<header>
+<h2 class="font-headline-lg text-headline-lg text-on-background mb-2">Record Wastage &amp; Expiration</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Log spoiled, expired, or wasted inventory to maintain accurate stock levels.</p>
+</header>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-margin-desktop">
+<form class="space-y-stack-lg">
+<!-- Ingredient Search -->
+<div class="space-y-stack-sm">
+<label class="block font-label-bold text-label-bold text-on-surface">Ingredient</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full h-12 pl-10 pr-4 rounded-lg bg-surface-bright border border-outline-variant text-body-md focus:border-secondary-container focus:ring-1 focus:ring-secondary-container transition-shadow" placeholder="Search ingredients (e.g., Avocados, Heavy Cream)..." type="text"/>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Start typing to search current inventory.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<!-- Quantity -->
+<div class="space-y-stack-sm">
+<label class="block font-label-bold text-label-bold text-on-surface">Quantity</label>
+<input class="w-full h-12 px-4 rounded-lg bg-surface-bright border border-outline-variant text-body-md focus:border-secondary-container focus:ring-1 focus:ring-secondary-container font-data-mono" min="0" placeholder="0.00" step="0.01" type="number"/>
+</div>
+<!-- Unit -->
+<div class="space-y-stack-sm">
+<label class="block font-label-bold text-label-bold text-on-surface">Unit</label>
+<select class="w-full h-12 px-4 rounded-lg bg-surface-bright border border-outline-variant text-body-md focus:border-secondary-container focus:ring-1 focus:ring-secondary-container appearance-none">
+<option disabled="" selected="" value="">Select unit...</option>
+<option value="kg">Kilograms (kg)</option>
+<option value="g">Grams (g)</option>
+<option value="l">Liters (L)</option>
+<option value="ml">Milliliters (mL)</option>
+<option value="pcs">Pieces (pcs)</option>
+<option value="lbs">Pounds (lbs)</option>
+</select>
+</div>
+</div>
+<!-- Reason -->
+<div class="space-y-stack-sm">
+<label class="block font-label-bold text-label-bold text-on-surface">Reason for Wastage</label>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<label class="relative flex items-center p-3 rounded-lg border border-outline-variant cursor-pointer hover:bg-surface-container-low transition-colors has-[:checked]:border-secondary-container has-[:checked]:bg-secondary-fixed/10">
+<input class="peer sr-only" name="reason" type="radio" value="expired"/>
+<span class="material-symbols-outlined text-on-surface-variant peer-checked:text-secondary-container mr-2">event_busy</span>
+<span class="font-label-bold text-label-bold text-on-surface">Expired</span>
+</label>
+<label class="relative flex items-center p-3 rounded-lg border border-outline-variant cursor-pointer hover:bg-surface-container-low transition-colors has-[:checked]:border-secondary-container has-[:checked]:bg-secondary-fixed/10">
+<input class="peer sr-only" name="reason" type="radio" value="spilled"/>
+<span class="material-symbols-outlined text-on-surface-variant peer-checked:text-secondary-container mr-2">water_drop</span>
+<span class="font-label-bold text-label-bold text-on-surface">Spilled/Dropped</span>
+</label>
+<label class="relative flex items-center p-3 rounded-lg border border-outline-variant cursor-pointer hover:bg-surface-container-low transition-colors has-[:checked]:border-secondary-container has-[:checked]:bg-secondary-fixed/10">
+<input class="peer sr-only" name="reason" type="radio" value="quality"/>
+<span class="material-symbols-outlined text-on-surface-variant peer-checked:text-secondary-container mr-2">thumb_down</span>
+<span class="font-label-bold text-label-bold text-on-surface">Quality Issue</span>
+</label>
+</div>
+</div>
+<!-- Notes -->
+<div class="space-y-stack-sm">
+<label class="block font-label-bold text-label-bold text-on-surface">Additional Notes</label>
+<textarea class="w-full p-4 rounded-lg bg-surface-bright border border-outline-variant text-body-md focus:border-secondary-container focus:ring-1 focus:ring-secondary-container resize-none" placeholder="Provide any additional context..." rows="3"></textarea>
+</div>
+<!-- Actions -->
+<div class="pt-stack-md border-t border-outline-variant flex justify-end gap-4">
+<button class="h-touch-target-min px-6 rounded text-on-surface border border-outline-variant hover:bg-surface-container-high transition-colors font-label-bold text-label-bold" type="button">
+                                Cancel
+                            </button>
+<button class="h-touch-target-min px-6 rounded bg-secondary text-on-secondary hover:bg-secondary-container transition-colors font-label-bold text-label-bold flex items-center gap-2 shadow-sm" type="submit">
+<span class="material-symbols-outlined text-lg">delete_sweep</span>
+                                Deduct from Inventory
+                            </button>
+</div>
+</form>
+</div>
+<!-- Recent Wastage Log Preview -->
+<div class="mt-stack-lg">
+<h3 class="font-headline-md text-headline-md text-on-background mb-stack-md">Recent Entries</h3>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant overflow-hidden">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="py-3 px-4 font-label-bold text-label-bold text-on-surface-variant">Ingredient</th>
+<th class="py-3 px-4 font-label-bold text-label-bold text-on-surface-variant">Amount</th>
+<th class="py-3 px-4 font-label-bold text-label-bold text-on-surface-variant">Reason</th>
+<th class="py-3 px-4 font-label-bold text-label-bold text-on-surface-variant">Logged By</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="py-3 px-4 font-body-md text-body-md text-on-surface">Fresh Basil</td>
+<td class="py-3 px-4 font-data-mono text-data-mono text-on-surface">500 g</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm">
+                                            Quality Issue
+                                        </span>
+</td>
+<td class="py-3 px-4 font-body-md text-body-md text-on-surface-variant">Sarah J.</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors bg-surface-bright/50">
+<td class="py-3 px-4 font-body-md text-body-md text-on-surface">Whole Milk</td>
+<td class="py-3 px-4 font-data-mono text-data-mono text-on-surface">2.5 L</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm">
+                                            Expired
+                                        </span>
+</td>
+<td class="py-3 px-4 font-body-md text-body-md text-on-surface-variant">Mike T.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

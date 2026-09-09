@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { fetchKioskMenu, fetchKioskTables, placeKioskOrder } from '../api/client';
-import { ShoppingBag, Plus, Minus, CheckCircle, CreditCard, QrCode, DollarSign } from 'lucide-react';
 
 export default function KioskView() {
   const [menuItems, setMenuItems] = useState([]);
@@ -14,6 +13,40 @@ export default function KioskView() {
   const [paymentMode, setPaymentMode] = useState('UPI');
   const [orderReceipt, setOrderReceipt] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Resizable Right Cart Panel State
+  const [cartWidth, setCartWidth] = useState(380);
+  const [isResizingCart, setIsResizingCart] = useState(false);
+
+  const handleCartResizeStart = (e) => {
+    e.preventDefault();
+    setIsResizingCart(true);
+
+    const handleMouseMove = (moveEvent) => {
+      const windowWidth = window.innerWidth;
+      const newWidth = Math.min(Math.max(windowWidth - moveEvent.clientX, 280), 560);
+      setCartWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizingCart(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  // Fallback high quality food imagery for dishes
+
+  const foodImages = [
+    "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80", // Burger
+    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80", // Salad
+    "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80", // Pizza
+    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&auto=format&fit=crop&q=80", // Drinks
+    "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=600&auto=format&fit=crop&q=80"  // Samosa/Starters
+  ];
 
   useEffect(() => {
     loadData();
@@ -43,7 +76,7 @@ export default function KioskView() {
       if (existing) {
         return prev.map(ci => ci.menu_item_id === item.id ? { ...ci, quantity: ci.quantity + 1 } : ci);
       }
-      return [...prev, { menu_item_id: item.id, name: item.name, price: item.price, quantity: 1 }];
+      return [...prev, { menu_item_id: item.id, name: item.name, price: item.price, quantity: 1, notes: '' }];
     });
   };
 
@@ -58,6 +91,8 @@ export default function KioskView() {
   };
 
   const cartSubtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const taxAmount = cartSubtotal * 0.085;
+  const grandTotal = cartSubtotal + taxAmount;
 
   const handleCheckout = async () => {
     if (cart.length === 0) return;
@@ -71,7 +106,7 @@ export default function KioskView() {
       items: cart.map(ci => ({
         menu_item_id: ci.menu_item_id,
         quantity: ci.quantity,
-        notes: "Placed via Kiosk"
+        notes: ci.notes || "Placed via Kiosk"
       }))
     };
 
@@ -90,210 +125,285 @@ export default function KioskView() {
   };
 
   return (
-    <div className="view-grid-2">
-      {/* Left Column: Menu Browsing Wireframe */}
-      <div>
-        <div className="wf-panel">
-          <div className="wf-panel-header">
-            <span className="wf-title">📱 Self-Ordering Kiosk — Menu Frame</span>
-            <div className="flex-gap-8">
-              {categories.map(cat => (
-                <button
-                  key={cat}
-                  className={`wf-btn ${selectedCategory === cat ? 'wf-btn-primary' : 'wf-btn-secondary'}`}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
+    <div className="h-[calc(100vh-1.5rem)] w-full flex overflow-hidden font-body-md select-none rounded-xl border border-outline-variant bg-surface-container-lowest shadow-lg">
+
+      {/* Main Content Area (Left) */}
+      <main className="flex-1 flex flex-col h-full bg-surface-container-lowest overflow-hidden">
+        {/* Header: Order Type & Categories */}
+        <header className="flex flex-col border-b border-outline-variant bg-surface-container-lowest shrink-0">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between px-6 py-4">
+            <div className="flex items-center gap-3 text-primary">
+              <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                restaurant_menu
+              </span>
+              <div>
+                <h1 className="font-headline-lg text-2xl font-bold text-primary">Rajgad Royal</h1>
+                <span className="text-xs text-on-surface-variant font-medium">Self-Ordering Touch Kiosk</span>
+              </div>
+            </div>
+
+            {/* Order Type Selector */}
+            <div className="flex items-center bg-surface-container-high rounded-lg p-1 gap-1">
+              <button
+                className={`flex items-center gap-2 rounded-md px-5 py-2 text-sm font-label-bold transition-all ${
+                  orderType === 'DINE_IN'
+                    ? 'bg-surface-container-lowest shadow-sm text-primary font-bold'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+                onClick={() => setOrderType('DINE_IN')}
+              >
+                <span className="material-symbols-outlined text-lg">deck</span>
+                Dine-In
+              </button>
+
+              <button
+                className={`flex items-center gap-2 rounded-md px-5 py-2 text-sm font-label-bold transition-all ${
+                  orderType === 'TAKEAWAY'
+                    ? 'bg-surface-container-lowest shadow-sm text-primary font-bold'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+                onClick={() => setOrderType('TAKEAWAY')}
+              >
+                <span className="material-symbols-outlined text-lg">takeout_dining</span>
+                Takeaway
+              </button>
+
+              {orderType === 'DINE_IN' && (
+                <>
+                  <div className="w-px h-6 bg-outline-variant mx-1"></div>
+                  <select
+                    className="bg-surface-container-lowest text-primary font-label-bold text-xs outline-none cursor-pointer py-1.5 px-3 rounded-md border border-outline-variant/60 shadow-sm"
+                    value={selectedTableId}
+                    onChange={(e) => setSelectedTableId(e.target.value)}
+                  >
+                    {tables.map(t => (
+                      <option key={t.id} value={t.id}>
+                        {t.table_number} ({t.status})
+                      </option>
+                    ))}
+                  </select>
+
+                </>
+              )}
             </div>
           </div>
 
-          <div className="wf-card-grid">
-            {filteredItems.map(item => (
-              <div key={item.id} className="wf-card">
-                <div className="flex-between" style={{ marginBottom: '8px' }}>
-                  <span className="wf-badge wf-badge-info">{item.category}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>₹{item.price.toFixed(2)}</span>
+          {/* Category Filter Bar */}
+          <div className="px-6 py-3 flex items-center gap-3 overflow-x-auto no-scrollbar border-t border-outline-variant/40">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`px-6 py-2 rounded-full text-sm font-label-bold whitespace-nowrap transition-all ${
+                  selectedCategory === cat
+                    ? 'bg-primary text-on-primary shadow-sm font-bold'
+                    : 'bg-surface-container-highest text-on-surface hover:bg-surface-variant'
+                }`}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </header>
+
+        {/* Dish Grid */}
+        <div className="flex-1 overflow-y-auto p-6 bg-surface-container-low">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
+            {filteredItems.map((item, idx) => (
+              <article
+                key={item.id}
+                className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col transition-all hover:shadow-md active:scale-[0.99]"
+              >
+                <div className="relative h-44 w-full bg-surface-variant overflow-hidden">
+                  <img
+                    className="w-full h-full object-cover"
+                    src={foodImages[idx % foodImages.length]}
+                    alt={item.name}
+                  />
+                  <div className="absolute top-3 left-3 bg-tertiary-container text-on-tertiary-container font-label-bold text-xs px-2.5 py-1 rounded shadow-sm">
+                    {item.is_available ? 'Available' : 'Sold Out'}
+                  </div>
                 </div>
-                <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{item.name}</h4>
-                <p style={{ color: 'var(--wf-text-muted)', fontSize: '0.8rem', marginBottom: '12px', height: '36px', overflow: 'hidden' }}>
-                  {item.description}
-                </p>
-                <button
-                  className="wf-btn wf-btn-primary"
-                  style={{ width: '100%', justifyContent: 'center' }}
-                  onClick={() => addToCart(item)}
-                >
-                  <Plus size={16} /> Add to Order
-                </button>
-              </div>
+
+                <div className="p-4 flex flex-col flex-1">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-headline-md text-lg font-bold text-on-surface">{item.name}</h3>
+                    <span className="font-headline-md text-lg font-bold text-primary font-mono">₹{item.price.toFixed(2)}</span>
+                  </div>
+                  <p className="font-body-md text-sm text-on-surface-variant line-clamp-2 mb-4 flex-1">
+                    {item.description || "Prepared with fresh royal ingredients & traditional spice blend."}
+                  </p>
+                  <button
+                    className="w-full bg-primary hover:bg-primary-container text-on-primary font-label-bold text-sm rounded-lg h-11 flex items-center justify-center gap-2 transition-colors active:scale-95 shadow-sm"
+                    onClick={() => addToCart(item)}
+                  >
+                    <span className="material-symbols-outlined text-lg">add</span>
+                    Add to Order
+                  </button>
+                </div>
+              </article>
             ))}
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Right Column: Order Summary & Checkout Drawer */}
-      <div>
-        <div className="wf-panel">
-          <div className="wf-panel-header">
-            <span className="wf-title"><ShoppingBag size={18} /> Cart & Checkout</span>
-            <span className="wf-badge wf-badge-normal">{cart.length} Items</span>
-          </div>
+      {/* Right Sidebar: Cart & Order Drawer */}
+      <aside
+        className="relative bg-surface-container border-l border-outline-variant flex flex-col h-full shadow-lg shrink-0 group"
+        style={{ width: `${cartWidth}px` }}
+      >
+        {/* Left Drag Handle for Cart Drawer */}
+        <div
+          className="absolute top-0 left-0 bottom-0 w-2 cursor-col-resize hover:bg-secondary/40 active:bg-secondary transition-colors z-50 flex items-center justify-center -ml-1"
+          onMouseDown={handleCartResizeStart}
+          title="Drag to resize cart drawer width"
+        >
+          <div className="w-0.5 h-8 bg-outline-variant/60 rounded-full group-hover:bg-secondary"></div>
+        </div>
 
-          {cart.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 10px', color: 'var(--wf-text-muted)', border: '1px dashed var(--wf-border-dashed)', borderRadius: '6px' }}>
-              Your cart is empty. Select items from the menu frame to build an order.
-            </div>
-          ) : (
-            <div>
-              <div style={{ maxHeight: '240px', overflowY: 'auto', marginBottom: '16px' }}>
-                {cart.map(ci => (
-                  <div key={ci.menu_item_id} className="flex-between" style={{ padding: '8px 0', borderBottom: '1px solid var(--wf-border)' }}>
-                    <div>
-                      <div style={{ fontWeight: '600' }}>{ci.name}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)', fontFamily: 'var(--font-mono)' }}>
-                        ₹{ci.price} × {ci.quantity} = ₹{(ci.price * ci.quantity).toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="flex-gap-8">
-                      <button className="wf-btn" style={{ padding: '4px 8px' }} onClick={() => updateQuantity(ci.menu_item_id, -1)}><Minus size={14} /></button>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{ci.quantity}</span>
-                      <button className="wf-btn" style={{ padding: '4px 8px' }} onClick={() => updateQuantity(ci.menu_item_id, 1)}><Plus size={14} /></button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Order Options */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px', paddingTop: '12px', borderTop: '1px dashed var(--wf-border)' }}>
-                <div className="flex-gap-8">
-                  <button
-                    className={`wf-btn ${orderType === 'DINE_IN' ? 'wf-btn-primary' : 'wf-btn-secondary'}`}
-                    style={{ flex: 1, justifyContent: 'center' }}
-                    onClick={() => setOrderType('DINE_IN')}
-                  >
-                    Dine-In
-                  </button>
-                  <button
-                    className={`wf-btn ${orderType === 'TAKEAWAY' ? 'wf-btn-primary' : 'wf-btn-secondary'}`}
-                    style={{ flex: 1, justifyContent: 'center' }}
-                    onClick={() => setOrderType('TAKEAWAY')}
-                  >
-                    Takeaway
-                  </button>
-                </div>
-
-                {orderType === 'DINE_IN' && (
-                  <div>
-                    <label style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)', display: 'block', marginBottom: '4px' }}>Select Table Number:</label>
-                    <select
-                      className="wf-input"
-                      value={selectedTableId}
-                      onChange={(e) => setSelectedTableId(e.target.value)}
-                    >
-                      {tables.map(t => (
-                        <option key={t.id} value={t.id}>
-                          {t.table_number} (Cap: {t.capacity}) — {t.status}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <div>
-                  <input
-                    type="text"
-                    className="wf-input"
-                    placeholder="Customer Name (Optional)"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                  />
-                </div>
-
-                {/* Payment Selection */}
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)', display: 'block', marginBottom: '4px' }}>Select Payment Method:</label>
-                  <div className="flex-gap-8">
-                    <button
-                      className={`wf-btn ${paymentMode === 'UPI' ? 'wf-btn-primary' : 'wf-btn-secondary'}`}
-                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.8rem' }}
-                      onClick={() => setPaymentMode('UPI')}
-                    >
-                      <QrCode size={14} /> Instant UPI
-                    </button>
-                    <button
-                      className={`wf-btn ${paymentMode === 'Card' ? 'wf-btn-primary' : 'wf-btn-secondary'}`}
-                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.8rem' }}
-                      onClick={() => setPaymentMode('Card')}
-                    >
-                      <CreditCard size={14} /> Card
-                    </button>
-                    <button
-                      className={`wf-btn ${paymentMode === 'Cash' ? 'wf-btn-primary' : 'wf-btn-secondary'}`}
-                      style={{ flex: 1, justifyContent: 'center', fontSize: '0.8rem' }}
-                      onClick={() => setPaymentMode('Cash')}
-                    >
-                      <DollarSign size={14} /> Cash
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Subtotal & Checkout */}
-              <div className="flex-between" style={{ padding: '12px 0', borderTop: '1px solid var(--wf-border)', fontSize: '1.1rem', fontWeight: 'bold' }}>
-                <span>Total Amount:</span>
-                <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--wf-accent)' }}>₹{cartSubtotal.toFixed(2)}</span>
-              </div>
-
-              <button
-                className="wf-btn wf-btn-primary"
-                style={{ width: '100%', padding: '12px', justifyContent: 'center', marginTop: '8px' }}
-                onClick={handleCheckout}
-                disabled={loading}
-              >
-                {loading ? "Dispatching Order..." : "Place Order & Generate KOT"}
-              </button>
-            </div>
+        {/* Cart Header */}
+        <div className="p-4 border-b border-outline-variant bg-surface-container flex items-center justify-between shrink-0">
+          <h2 className="font-headline-lg text-lg font-bold text-on-surface flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary">shopping_cart</span>
+            Current Order ({cart.length})
+          </h2>
+          {cart.length > 0 && (
+            <button
+              className="text-error font-label-bold text-sm hover:bg-error-container hover:text-on-error-container px-3 py-1.5 rounded transition-colors"
+              onClick={() => setCart([])}
+            >
+              Clear
+            </button>
           )}
         </div>
 
-        {/* KOT Receipt Confirmation Modal / Box */}
-        {orderReceipt && (
-          <div className="wf-panel" style={{ borderColor: 'var(--wf-success)', marginTop: '20px' }}>
-            <div className="wf-panel-header">
-              <span className="wf-title" style={{ color: 'var(--wf-success)' }}>
-                <CheckCircle size={18} /> KOT Ticket Created
-              </span>
-              <button className="wf-btn wf-btn-secondary" style={{ padding: '2px 8px' }} onClick={() => setOrderReceipt(null)}>Close</button>
+        {/* Cart Items List */}
+        <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-on-surface-variant text-center p-6 border-2 border-dashed border-outline-variant rounded-xl">
+              <span className="material-symbols-outlined text-4xl text-outline mb-2">shopping_bag</span>
+              <p className="font-label-bold text-sm">Your order is empty</p>
+              <p className="text-xs text-on-surface-variant mt-1">Tap items on the left menu to add them to your bill.</p>
             </div>
-            <div className="wf-receipt-box">
-              <div style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: '8px', borderBottom: '1px dashed #475569', paddingBottom: '4px' }}>
-                KITCHEN ORDER TICKET (KOT)
+          ) : (
+            cart.map((ci) => (
+              <div key={ci.menu_item_id} className="bg-surface-container-lowest p-3.5 rounded-lg border border-outline-variant flex flex-col gap-2 shadow-sm">
+                <div className="flex justify-between items-start">
+                  <h4 className="font-label-bold text-sm font-bold text-on-surface">{ci.name}</h4>
+                  <span className="font-label-bold text-sm font-mono text-primary font-bold">₹{(ci.price * ci.quantity).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-xs text-on-surface-variant font-mono">₹{ci.price.toFixed(2)} ea</span>
+                  <div className="flex items-center gap-3 bg-surface-container rounded-lg p-1 border border-outline-variant">
+                    <button
+                      className="w-8 h-8 flex items-center justify-center bg-surface-container-lowest rounded text-on-surface hover:bg-surface-variant shadow-sm active:scale-95"
+                      onClick={() => updateQuantity(ci.menu_item_id, -1)}
+                    >
+                      <span className="material-symbols-outlined text-sm">remove</span>
+                    </button>
+                    <span className="font-headline-md font-bold text-on-surface w-5 text-center font-mono">{ci.quantity}</span>
+                    <button
+                      className="w-8 h-8 flex items-center justify-center bg-surface-container-lowest rounded text-on-surface hover:bg-surface-variant shadow-sm active:scale-95"
+                      onClick={() => updateQuantity(ci.menu_item_id, 1)}
+                    >
+                      <span className="material-symbols-outlined text-sm">add</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div>Order No: <strong>{orderReceipt.order_number}</strong></div>
-              <div>Order Type: <strong>{orderReceipt.order_type}</strong></div>
-              <div>Status: <span className="wf-badge wf-badge-warning">{orderReceipt.status}</span></div>
-              <div>Payment: <strong>{orderReceipt.paymentMode}</strong></div>
-              <div style={{ margin: '8px 0', borderTop: '1px dashed #475569' }}></div>
+            ))
+          )}
+        </div>
+
+        {/* Cart Footer / Checkout */}
+        {cart.length > 0 && (
+          <div className="p-4 border-t border-outline-variant bg-surface-container-lowest shrink-0">
+            <div className="flex flex-col gap-2 mb-4">
+              <div className="flex justify-between text-sm text-on-surface-variant">
+                <span>Subtotal</span>
+                <span className="font-mono font-semibold">₹{cartSubtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-on-surface-variant">
+                <span>GST Tax (8.5%)</span>
+                <span className="font-mono font-semibold">₹{taxAmount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-lg font-bold text-on-surface mt-2 pt-2 border-t border-outline-variant border-dashed">
+                <span>Total Amount</span>
+                <span className="font-mono text-primary text-xl">₹{grandTotal.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <button
+              className="w-full bg-secondary-container hover:bg-secondary-fixed text-on-secondary-container font-headline-md text-base font-bold rounded-xl h-14 flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98]"
+              onClick={handleCheckout}
+              disabled={loading}
+            >
+              <span>{loading ? "Dispatching..." : "Place Order & Send KOT"}</span>
+              <span className="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+        )}
+      </aside>
+
+      {/* Confirmation Order Receipt Modal */}
+      {orderReceipt && (
+        <div className="fixed inset-0 bg-primary/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 max-w-md w-full shadow-2xl">
+            <div className="flex justify-between items-center mb-4 pb-3 border-b border-outline-variant">
+              <div className="flex items-center gap-2 text-on-tertiary-container">
+                <span className="material-symbols-outlined text-2xl">check_circle</span>
+                <h3 className="font-bold text-lg">Order Created Successfully!</h3>
+              </div>
+              <button
+                className="text-on-surface-variant hover:text-on-surface"
+                onClick={() => setOrderReceipt(null)}
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            <div className="bg-surface-container-low p-4 rounded-lg border border-outline-variant font-mono text-sm space-y-2">
+              <div className="text-center font-bold text-base border-b border-dashed border-outline-variant pb-2">
+                RAJGAD ROYAL KOT TICKET
+              </div>
+              <div className="flex justify-between">
+                <span>Order No:</span>
+                <span className="font-bold">{orderReceipt.order_number}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Order Type:</span>
+                <span>{orderReceipt.order_type}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Status:</span>
+                <span className="bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-0.5 rounded text-xs font-bold">
+                  {orderReceipt.status}
+                </span>
+              </div>
+              <div className="border-t border-dashed border-outline-variant my-2"></div>
               {orderReceipt.cartItems?.map((ci, idx) => (
-                <div key={idx} className="flex-between">
+                <div key={idx} className="flex justify-between text-xs">
                   <span>{ci.quantity}× {ci.name}</span>
                   <span>₹{(ci.price * ci.quantity).toFixed(2)}</span>
                 </div>
               ))}
-              <div style={{ margin: '8px 0', borderTop: '1px dashed #475569' }}></div>
-              <div className="flex-between" style={{ fontWeight: 'bold' }}>
-                <span>Subtotal:</span>
-                <span>₹{orderReceipt.subtotal?.toFixed(2)}</span>
-              </div>
-              <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center' }}>
-                Sent to Kitchen Queue automatically.
+              <div className="border-t border-dashed border-outline-variant my-2"></div>
+              <div className="flex justify-between font-bold text-sm">
+                <span>Grand Total:</span>
+                <span>₹{orderReceipt.total_amount?.toFixed(2)}</span>
               </div>
             </div>
+
+            <button
+              className="w-full mt-4 bg-primary text-on-primary font-bold py-3 rounded-lg hover:bg-primary-container transition-colors"
+              onClick={() => setOrderReceipt(null)}
+            >
+              Done & Start New Order
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

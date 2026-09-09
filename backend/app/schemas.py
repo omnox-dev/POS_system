@@ -172,7 +172,9 @@ class OrderBilling(BaseModel):
     discount_amount: float = 0.0
     tax_percentage: float = 5.0  # e.g., GST 5%
     payment_mode: str  # Cash, Card, UPI, Digital Payment
+    customer_phone: Optional[str] = None
     redeem_loyalty_points: float = 0.0
+
 
 class OrderResponse(BaseModel):
     id: int

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add/Edit Recipe Ingredient - BistroFlow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#001908",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed-variant": "#3d4756",
+                      "surface-bright": "#f8f9fa",
+                      "surface-variant": "#e1e3e4",
+                      "on-error": "#ffffff",
+                      "secondary-fixed": "#ffdcc5",
+                      "on-surface-variant": "#44474c",
+                      "on-error-container": "#93000a",
+                      "on-surface": "#191c1d",
+                      "surface-container-high": "#e7e8e9",
+                      "on-primary-container": "#8690a1",
+                      "primary-container": "#1f2937",
+                      "background": "#f8f9fa",
+                      "inverse-surface": "#2e3132",
+                      "secondary-container": "#fc8f34",
+                      "on-tertiary-container": "#16a558",
+                      "surface-dim": "#d9dadb",
+                      "outline-variant": "#c5c6cc",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-container": "#003015",
+                      "inverse-on-surface": "#f0f1f2",
+                      "surface-tint": "#555f6f",
+                      "secondary-fixed-dim": "#ffb783",
+                      "primary": "#0a1422",
+                      "secondary": "#944a00",
+                      "surface-container": "#edeeef",
+                      "inverse-primary": "#bdc7d9",
+                      "on-background": "#191c1d",
+                      "on-secondary-container": "#663100",
+                      "error": "#ba1a1a",
+                      "surface-container-low": "#f3f4f5",
+                      "on-primary": "#ffffff",
+                      "surface-container-highest": "#e1e3e4",
+                      "on-secondary": "#ffffff",
+                      "surface": "#f8f9fa",
+                      "on-secondary-fixed": "#301400",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed-variant": "#713700",
+                      "on-tertiary-fixed": "#00210c",
+                      "tertiary-fixed": "#7efba4",
+                      "tertiary-fixed-dim": "#61de8a",
+                      "on-primary-fixed": "#121c2a",
+                      "on-tertiary-fixed-variant": "#005228",
+                      "primary-fixed-dim": "#bdc7d9",
+                      "outline": "#75777c",
+                      "primary-fixed": "#d9e3f6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "1rem",
+                      "stack-lg": "1.5rem",
+                      "touch-target-min": "48px",
+                      "margin-desktop": "2rem",
+                      "stack-sm": "0.5rem",
+                      "gutter": "1rem",
+                      "stack-md": "1rem"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-bold": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "data-mono": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-bold": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "26px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "data-mono": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md h-screen flex flex-col antialiased selection:bg-secondary selection:text-on-secondary">
+<!-- TopNavBar (Hidden on Mobile) -->
+<nav class="bg-surface dark:bg-primary w-full top-0 sticky shadow-sm hidden md:flex border-b border-outline-variant dark:border-outline justify-between items-center h-16 px-margin-desktop max-w-full z-40">
+<div class="flex items-center gap-gutter">
+<span class="font-headline-md text-headline-md font-bold text-secondary dark:text-secondary-fixed">BistroFlow</span>
+<div class="hidden lg:flex items-center gap-2 ml-4">
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-primary-container transition-colors active:opacity-80 px-3 py-2 rounded-lg" href="#">Dashboard</a>
+<a class="text-secondary dark:text-secondary-fixed-dim border-b-2 border-secondary font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-primary-container transition-colors active:opacity-80 px-3 py-2" href="#">Inventory</a>
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-primary-container transition-colors active:opacity-80 px-3 py-2 rounded-lg" href="#">KDS</a>
+<a class="text-on-surface-variant dark:text-on-primary-fixed-variant font-label-bold text-label-bold hover:bg-surface-container-high dark:hover:bg-primary-container transition-colors active:opacity-80 px-3 py-2 rounded-lg" href="#">Finance</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-on-surface font-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary w-64 transition-all" placeholder="Search..." type="text"/>
+</div>
+<button class="bg-secondary text-on-secondary font-label-bold px-4 py-2 rounded-full hover:bg-secondary-container hover:text-on-secondary-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">add</span>
+                New Order
+            </button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<img alt="User profile" class="w-10 h-10 rounded-full object-cover border-2 border-surface-container-highest cursor-pointer" data-alt="A professional headshot of a restaurant manager in a brightly lit modern office setting, wearing a dark blazer over a light shirt. The lighting is soft and natural, creating a clean, welcoming, and high-end corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSDrrrJbJd7HJm7sGnGhlYdVdbE21O68HJaUSG_NCbbbWBtT2K5Ehj0qsWPRikvp6rQQVsQm2_I7f3a4orT_IXYjVpIvyP5OJAKCH8j_tznNN4r5BljLFhHRqxcfdo2dVrKR9cRc7majVgPxWeOB6GRNmQwkv7vlsNw6vM3onIw4gpkBFB7_8bmcNlWJULNyES1moVZBD3BqSWIzjTyd7FH3p1HYEfl387t3mErxSKQ_LTIk8rnsR7"/>
+</div>
+</nav>
+<!-- Main Content Area with SideNav Context -->
+<div class="flex flex-1 overflow-hidden relative">
+<!-- SideNavBar (Hidden on Mobile) -->
+<aside class="bg-surface-container dark:bg-primary h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col py-stack-lg px-4 gap-stack-sm border-r bg-surface-container-low dark:border-primary-container z-50">
+<div class="flex flex-col gap-1 mb-6 px-3">
+<span class="font-headline-lg text-headline-lg font-black text-secondary">BistroFlow</span>
+<div class="flex items-center gap-3 mt-4">
+<img alt="Staff Avatar" class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A small circular avatar showing a generic staff member silhouette in soft grey tones against a crisp white background, representing a user profile placeholder in a clean, modern interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-TMyMleEa_pf_mu9i7RgdWugLaMY9PTh3ebfYK-L-MNM9QBpfgoaW2qCm20cGNWXereAwO5O0v49aiwXFHbtol7wRdhBoivsebsBHVtnHYMLP5xE9jXFhLB3syn3I8hcZS4YP-J16GB3KGs1vd0PkFNgl9AxSPdXtevRSWlJBMFqgDkelIafjkDk_n9lMM30AfwVb6BCQ6SZIrqYhIKuvlO93KVWMWMKogK1dqoNg7AbCpusK1sYi"/>
+<div class="flex flex-col">
+<span class="font-label-bold text-label-bold text-on-surface">Station 01</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Main Floor</span>
+</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1 overflow-y-auto">
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-primary-fixed-variant p-3 rounded-lg hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">table_restaurant</span>
+                     Floor Plan
+                 </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-primary-fixed-variant p-3 rounded-lg hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">point_of_sale</span>
+                     POS
+                 </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-primary-fixed-variant p-3 rounded-lg hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">soup_kitchen</span>
+                     KDS
+                 </a>
+<a class="flex items-center gap-3 bg-secondary-container text-on-secondary-container rounded-lg p-3 transition-all duration-200 ease-in-out font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+                     Inventory
+                 </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-primary-fixed-variant p-3 rounded-lg hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">leaderboard</span>
+                     Reports
+                 </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-primary-fixed-variant p-3 rounded-lg hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">admin_panel_settings</span>
+                     Admin
+                 </a>
+</nav>
+<div class="mt-auto flex flex-col gap-1 border-t border-outline-variant pt-4">
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-primary-fixed-variant p-3 rounded-lg hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help</span>
+                     Help
+                 </a>
+<a class="flex items-center gap-3 text-on-surface-variant dark:text-on-primary-fixed-variant p-3 rounded-lg hover:bg-surface-variant dark:hover:bg-surface-container-highest transition-all duration-200 ease-in-out font-label-bold text-label-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">history</span>
+                     Logs
+                 </a>
+<button class="mt-4 w-full border border-secondary text-secondary font-label-bold py-3 rounded-lg hover:bg-secondary hover:text-on-secondary transition-colors h-touch-target-min flex items-center justify-center">
+                     Clock Out
+                 </button>
+</div>
+</aside>
+<!-- Main Canvas (Modal Context) -->
+<main class="flex-1 md:ml-64 bg-background relative overflow-y-auto">
+<!-- Modal Overlay (Simulated) -->
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-sm z-30 flex items-center justify-center p-margin-mobile md:p-margin-desktop">
+<!-- Modal Container -->
+<div class="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-4xl flex flex-col max-h-[90vh] overflow-hidden border border-outline-variant animate-[fadeIn_0.2s_ease-out]">
+<!-- Modal Header -->
+<div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant bg-surface-bright sticky top-0 z-10">
+<div class="flex flex-col">
+<h2 class="font-headline-md text-headline-md text-on-surface">Add / Edit Recipe Ingredient</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Recipe: <span class="font-label-bold text-primary">Truffle Mushroom Risotto</span></p>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+</div>
+<!-- Modal Body (Bento Layout) -->
+<div class="p-6 flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-3 gap-6 bg-background">
+<!-- Left Column: Input Form (Spans 2 cols on LG) -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<!-- Search & Select Card -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border border-outline-variant shadow-sm relative">
+<label class="block font-label-bold text-label-bold text-on-surface mb-2">Raw Material / Ingredient</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant rounded-lg text-on-surface font-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all h-touch-target-min" placeholder="Search inventory (e.g., Arborio Rice, Truffle Oil)..." type="text"/>
+</div>
+<!-- Simulated Dropdown List -->
+<div class="absolute w-full left-0 top-[100%] mt-1 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-lg z-20 hidden">
+<!-- Items would go here -->
+</div>
+</div>
+<!-- Metrics Row (Glassmorphism inspired) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-surface-bright/80 backdrop-blur-md p-5 rounded-lg border border-outline-variant/50 shadow-sm flex flex-col">
+<label class="block font-label-bold text-label-bold text-on-surface-variant mb-2">Required Quantity</label>
+<input class="w-full px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface font-data-mono text-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary h-touch-target-min text-right" placeholder="0.00" type="number"/>
+</div>
+<div class="bg-surface-bright/80 backdrop-blur-md p-5 rounded-lg border border-outline-variant/50 shadow-sm flex flex-col">
+<label class="block font-label-bold text-label-bold text-on-surface-variant mb-2">Unit of Measure</label>
+<div class="relative h-touch-target-min">
+<select class="w-full h-full appearance-none px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface font-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary cursor-pointer">
+<option value="g">Grams (g)</option>
+<option value="kg">Kilograms (Kg)</option>
+<option value="ml">Milliliters (ml)</option>
+<option value="l">Liters (L)</option>
+<option value="ea">Each (ea)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" style="font-variation-settings: 'FILL' 0;">expand_more</span>
+</div>
+</div>
+<div class="bg-surface-bright/80 backdrop-blur-md p-5 rounded-lg border border-outline-variant/50 shadow-sm flex flex-col">
+<label class="block font-label-bold text-label-bold text-on-surface-variant mb-2 flex items-center gap-1">
+                                        Yield Loss %
+                                        <span class="material-symbols-outlined text-[16px] text-on-primary-container cursor-help" title="Percentage of raw material lost during prep/cooking">info</span>
+</label>
+<div class="relative">
+<input class="w-full px-4 pr-8 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-on-surface font-data-mono text-lg focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary h-touch-target-min text-right" placeholder="0" type="number"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-data-mono">%</span>
+</div>
+</div>
+</div>
+<div class="flex justify-end mt-4">
+<button class="bg-secondary text-on-secondary font-label-bold px-6 py-3 rounded-lg hover:bg-secondary-container hover:text-on-secondary-container transition-colors flex items-center gap-2 h-touch-target-min shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">save</span>
+                                    Save to Recipe
+                                </button>
+</div>
+</div>
+<!-- Right Column: Current Recipe Ingredients list -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg flex flex-col h-full shadow-sm">
+<div class="p-4 border-b border-outline-variant bg-surface-bright flex justify-between items-center">
+<h3 class="font-label-bold text-label-bold text-on-surface">Current Ingredients</h3>
+<span class="bg-surface-container-high text-on-surface-variant font-label-sm px-2 py-1 rounded-full">4 Items</span>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="divide-y divide-outline-variant/50">
+<!-- Item 1 -->
+<li class="p-4 hover:bg-surface-container-low transition-colors group cursor-pointer border-l-4 border-transparent hover:border-secondary">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-label-bold text-label-bold text-on-surface">Arborio Rice</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Dry Goods</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-data-mono text-data-mono text-on-surface">150 g</span>
+<span class="font-label-sm text-label-sm text-error">0% loss</span>
+</div>
+</div>
+</li>
+<!-- Item 2 -->
+<li class="p-4 hover:bg-surface-container-low transition-colors group cursor-pointer border-l-4 border-transparent hover:border-secondary bg-surface-container-lowest">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-label-bold text-label-bold text-on-surface">Cremini Mushrooms</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Produce</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-data-mono text-data-mono text-on-surface">75 g</span>
+<span class="font-label-sm text-label-sm text-error">15% loss</span>
+</div>
+</div>
+</li>
+<!-- Item 3 -->
+<li class="p-4 hover:bg-surface-container-low transition-colors group cursor-pointer border-l-4 border-transparent hover:border-secondary">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-label-bold text-label-bold text-on-surface">Vegetable Broth</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Prep</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-data-mono text-data-mono text-on-surface">450 ml</span>
+<span class="font-label-sm text-label-sm text-error">5% loss</span>
+</div>
+</div>
+</li>
+<!-- Item 4 (Active/Editing state) -->
+<li class="p-4 bg-secondary-container/10 border-l-4 border-secondary transition-colors group cursor-pointer relative">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="font-label-bold text-label-bold text-secondary">Truffle Oil</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Pantry</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-data-mono text-data-mono text-secondary">15 ml</span>
+<span class="font-label-sm text-label-sm text-error">2% loss</span>
+</div>
+</div>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-on-surface-variant hover:text-error rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">delete</span>
+</button>
+</div>
+</li>
+</ul>
+</div>
+<div class="p-4 border-t border-outline-variant bg-surface-bright">
+<div class="flex justify-between items-center">
+<span class="font-label-bold text-label-bold text-on-surface-variant">Total Cost Estimate:</span>
+<span class="font-data-mono text-headline-md font-bold text-on-surface">$4.25</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="bg-surface dark:bg-primary fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-1 md:hidden h-touch-target-min border-t border-outline-variant dark:border-outline shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-fixed-variant p-2 hover:bg-surface-container-highest active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">grid_view</span>
+<span class="font-label-sm text-label-sm">Floor</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-fixed-variant p-2 hover:bg-surface-container-highest active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">shopping_cart</span>
+<span class="font-label-sm text-label-sm">POS</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-fixed-variant p-2 hover:bg-surface-container-highest active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">restaurant</span>
+<span class="font-label-sm text-label-sm">KDS</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-fixed-variant p-2 hover:bg-surface-container-highest active:scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+<span class="font-label-sm text-label-sm">Alerts</span>
+</a>
+</nav>
+<style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</body></html>

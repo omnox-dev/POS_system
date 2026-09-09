@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BistroFlow - Staff Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "secondary-fixed-dim": "#ffb783",
+                            "on-tertiary-container": "#16a558",
+                            "primary-fixed-dim": "#bdc7d9",
+                            "inverse-primary": "#bdc7d9",
+                            "surface-container-high": "#e7e8e9",
+                            "tertiary-fixed": "#7efba4",
+                            "background": "#f8f9fa",
+                            "surface-container-low": "#f3f4f5",
+                            "on-primary-fixed": "#121c2a",
+                            "error-container": "#ffdad6",
+                            "surface-bright": "#f8f9fa",
+                            "primary-container": "#1f2937",
+                            "outline-variant": "#c5c6cc",
+                            "on-background": "#191c1d",
+                            "surface-container-lowest": "#ffffff",
+                            "tertiary-fixed-dim": "#61de8a",
+                            "on-secondary-container": "#663100",
+                            "secondary": "#944a00",
+                            "secondary-fixed": "#ffdcc5",
+                            "error": "#ba1a1a",
+                            "on-secondary-fixed": "#301400",
+                            "surface-tint": "#555f6f",
+                            "on-tertiary-fixed-variant": "#005228",
+                            "on-tertiary-fixed": "#00210c",
+                            "on-secondary-fixed-variant": "#713700",
+                            "on-primary-container": "#8690a1",
+                            "surface-container": "#edeeef",
+                            "surface-dim": "#d9dadb",
+                            "primary-fixed": "#d9e3f6",
+                            "on-error-container": "#93000a",
+                            "on-surface-variant": "#44474c",
+                            "on-primary": "#ffffff",
+                            "on-error": "#ffffff",
+                            "tertiary-container": "#003015",
+                            "on-surface": "#191c1d",
+                            "surface-container-highest": "#e1e3e4",
+                            "secondary-container": "#fc8f34",
+                            "inverse-surface": "#2e3132",
+                            "outline": "#75777c",
+                            "tertiary": "#001908",
+                            "on-secondary": "#ffffff",
+                            "inverse-on-surface": "#f0f1f2",
+                            "primary": "#0a1422",
+                            "surface-variant": "#e1e3e4",
+                            "on-tertiary": "#ffffff",
+                            "surface": "#f8f9fa",
+                            "on-primary-fixed-variant": "#3d4756"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.25rem",
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                    },
+                    "spacing": {
+                            "stack-md": "1rem",
+                            "margin-mobile": "1rem",
+                            "margin-desktop": "2rem",
+                            "stack-lg": "1.5rem",
+                            "gutter": "1rem",
+                            "stack-sm": "0.5rem",
+                            "touch-target-min": "48px"
+                    },
+                    "fontFamily": {
+                            "headline-lg-mobile": ["Inter"],
+                            "label-sm": ["Inter"],
+                            "headline-lg": ["Inter"],
+                            "data-mono": ["Inter"],
+                            "headline-md": ["Inter"],
+                            "body-lg": ["Inter"],
+                            "body-md": ["Inter"],
+                            "label-bold": ["Inter"]
+                    },
+                    "fontSize": {
+                            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                            "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                            "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                            "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                            "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                            "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                            "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}]
+                    }
+                },
+            }
+        }
+    </script>
+<style>
+        .pin-dot {
+            transition: all 0.2s ease-in-out;
+        }
+        .pin-dot.filled {
+            background-color: var(--tw-colors-primary);
+            border-color: var(--tw-colors-primary);
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen flex items-center justify-center relative overflow-hidden font-body-md text-on-surface">
+<!-- Background Image with Overlay -->
+<div class="absolute inset-0 z-0 w-full h-full">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A high-quality, professional photograph of a bustling, modern restaurant kitchen during prep time. The image features fresh ingredients like vibrant green basil, ripe red tomatoes, and artisanal bread on a stainless steel counter. The lighting is bright and clean, typical of a modern light-mode aesthetic, with a soft focus background highlighting the professional atmosphere. The color palette is rich yet restrained, with a subtle dark overlay to ensure text legibility." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuATzRgQPfY4JR3Rj-O_SoNU4ZDMeRLt4tkqCWNGseVjHdjuTRzmypexvmS41blGrbP9maNt80qApO7bosDU-p2xstPpiBjAIovaYKwXQrBCeLi6k4SWyjh-z8xbNOgTvqkjQLpS96fp1rGXlwths_BMrMlC08pc3BQegAM3_aCF-IJUsPFI_bYnY7t_ozvSmqhEoOVrdhz2UXSCg1-AWFwZATkmeXoSwkCk63Uzp0xee7KKNXI32Vqu')"></div>
+<div class="absolute inset-0 bg-surface-tint/60 mix-blend-multiply backdrop-blur-sm"></div>
+</div>
+<!-- Login Container -->
+<main class="relative z-10 w-full max-w-md mx-margin-mobile md:mx-margin-desktop bg-surface-container-lowest rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-outline-variant overflow-hidden">
+<!-- Header Section -->
+<header class="pt-stack-lg px-stack-lg pb-stack-md text-center">
+<div class="flex items-center justify-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary text-4xl" style="font-variation-settings: 'FILL' 1;">restaurant_menu</span>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">BistroFlow</h1>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs mx-auto">
+                Welcome back to BistroFlow. Please enter your staff PIN to begin.
+            </p>
+</header>
+<!-- PIN Display Area -->
+<div class="px-stack-lg py-stack-md flex justify-center gap-4">
+<div class="w-4 h-4 rounded-full border-2 border-outline-variant pin-dot"></div>
+<div class="w-4 h-4 rounded-full border-2 border-outline-variant pin-dot"></div>
+<div class="w-4 h-4 rounded-full border-2 border-outline-variant pin-dot"></div>
+<div class="w-4 h-4 rounded-full border-2 border-outline-variant pin-dot"></div>
+</div>
+<!-- Keypad Area -->
+<div class="px-stack-lg pb-stack-lg">
+<div class="grid grid-cols-3 gap-3 max-w-[280px] mx-auto">
+<!-- Row 1 -->
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">1</button>
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">2</button>
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">3</button>
+<!-- Row 2 -->
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">4</button>
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">5</button>
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">6</button>
+<!-- Row 3 -->
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">7</button>
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">8</button>
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">9</button>
+<!-- Row 4 -->
+<button class="h-[64px] rounded-lg bg-surface-container-lowest text-on-surface-variant flex items-center justify-center invisible">.</button>
+<button class="h-[64px] rounded-lg bg-surface-container-low hover:bg-surface-container-highest active:bg-surface-variant active:scale-95 transition-all text-headline-md font-headline-md text-primary flex items-center justify-center">0</button>
+<button aria-label="Backspace" class="h-[64px] rounded-lg bg-surface-container-low hover:bg-error-container hover:text-on-error-container active:scale-95 transition-all text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined">backspace</span>
+</button>
+</div>
+</div>
+<!-- Footer / Admin Link -->
+<div class="bg-surface-container-lowest border-t border-outline-variant p-4 text-center">
+<a class="inline-flex items-center gap-2 font-label-bold text-label-bold text-secondary hover:text-on-secondary-container transition-colors p-2 rounded-md hover:bg-secondary-container/10" href="#">
+<span class="material-symbols-outlined text-[18px]">admin_panel_settings</span>
+                Admin Login
+            </a>
+</div>
+</main>
+<!-- Decorative elements to anchor the modern feel -->
+<div class="absolute bottom-4 left-4 right-4 text-center z-10 pointer-events-none">
+<span class="font-label-sm text-label-sm text-surface-container-lowest/70 uppercase tracking-widest">BistroFlow POS System v2.4</span>
+</div>
+<script>
+        // Simple JS to simulate PIN entry feedback
+        const buttons = document.querySelectorAll('button:not([aria-label="Backspace"])');
+        const backspace = document.querySelector('button[aria-label="Backspace"]');
+        const dots = document.querySelectorAll('.pin-dot');
+        let currentPinLength = 0;
+        const maxPinLength = 4;
+
+        function updateDots() {
+            dots.forEach((dot, index) => {
+                if (index < currentPinLength) {
+                    dot.classList.add('filled', 'bg-secondary', 'border-secondary');
+                } else {
+                    dot.classList.remove('filled', 'bg-secondary', 'border-secondary');
+                }
+            });
+            
+            // Simulate login successful visual if 4 digits
+            if (currentPinLength === maxPinLength) {
+                setTimeout(() => {
+                    dots.forEach(dot => {
+                        dot.classList.remove('bg-secondary', 'border-secondary');
+                        dot.classList.add('bg-on-tertiary-container', 'border-on-tertiary-container');
+                    });
+                }, 200);
+                setTimeout(() => {
+                    currentPinLength = 0;
+                    updateDots();
+                }, 800);
+            }
+        }
+
+        buttons.forEach(btn => {
+            if(btn.textContent.trim() !== "" && btn.textContent.trim() !== ".") {
+                btn.addEventListener('click', () => {
+                    if (currentPinLength < maxPinLength) {
+                        currentPinLength++;
+                        updateDots();
+                    }
+                });
+            }
+        });
+
+        if (backspace) {
+            backspace.addEventListener('click', () => {
+                if (currentPinLength > 0) {
+                    currentPinLength--;
+                    updateDots();
+                }
+            });
+        }
+    </script>
+</body></html>

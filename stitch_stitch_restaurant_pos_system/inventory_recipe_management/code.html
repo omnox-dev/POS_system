@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BistroFlow - Inventory Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed-dim": "#ffb783",
+                      "on-tertiary-container": "#16a558",
+                      "primary-fixed-dim": "#bdc7d9",
+                      "inverse-primary": "#bdc7d9",
+                      "surface-container-high": "#e7e8e9",
+                      "tertiary-fixed": "#7efba4",
+                      "background": "#f8f9fa",
+                      "surface-container-low": "#f3f4f5",
+                      "on-primary-fixed": "#121c2a",
+                      "error-container": "#ffdad6",
+                      "surface-bright": "#f8f9fa",
+                      "primary-container": "#1f2937",
+                      "outline-variant": "#c5c6cc",
+                      "on-background": "#191c1d",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed-dim": "#61de8a",
+                      "on-secondary-container": "#663100",
+                      "secondary": "#944a00",
+                      "secondary-fixed": "#ffdcc5",
+                      "error": "#ba1a1a",
+                      "on-secondary-fixed": "#301400",
+                      "surface-tint": "#555f6f",
+                      "on-tertiary-fixed-variant": "#005228",
+                      "on-tertiary-fixed": "#00210c",
+                      "on-secondary-fixed-variant": "#713700",
+                      "on-primary-container": "#8690a1",
+                      "surface-container": "#edeeef",
+                      "surface-dim": "#d9dadb",
+                      "primary-fixed": "#d9e3f6",
+                      "on-error-container": "#93000a",
+                      "on-surface-variant": "#44474c",
+                      "on-primary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "tertiary-container": "#003015",
+                      "on-surface": "#191c1d",
+                      "surface-container-highest": "#e1e3e4",
+                      "secondary-container": "#fc8f34",
+                      "inverse-surface": "#2e3132",
+                      "outline": "#75777c",
+                      "tertiary": "#001908",
+                      "on-secondary": "#ffffff",
+                      "inverse-on-surface": "#f0f1f2",
+                      "primary": "#0a1422",
+                      "surface-variant": "#e1e3e4",
+                      "on-tertiary": "#ffffff",
+                      "surface": "#f8f9fa",
+                      "on-primary-fixed-variant": "#3d4756"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-md": "1rem",
+                      "margin-mobile": "1rem",
+                      "margin-desktop": "2rem",
+                      "stack-lg": "1.5rem",
+                      "gutter": "1rem",
+                      "stack-sm": "0.5rem",
+                      "touch-target-min": "48px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "data-mono": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-bold": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "data-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="bg-surface-container dark:bg-primary-container h-screen w-64 fixed left-0 top-0 flex flex-col py-stack-lg px-stack-md gap-stack-sm hidden md:flex z-50">
+<div class="mb-stack-lg px-3">
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-primary">BistroFlow</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Admin Terminal</p>
+</div>
+<nav class="flex-1 flex flex-col gap-stack-sm">
+<a class="flex items-center gap-stack-md text-on-surface-variant dark:text-on-primary-container p-3 hover:bg-surface-container-highest dark:hover:bg-on-primary-fixed-variant rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="point_of_sale">point_of_sale</span>
+<span class="font-label-bold text-label-bold">POS</span>
+</a>
+<a class="flex items-center gap-stack-md bg-secondary-container dark:bg-secondary text-on-secondary-container dark:text-on-secondary rounded-lg p-3 hover:bg-surface-container-highest dark:hover:bg-on-primary-fixed-variant transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2" data-weight="fill">inventory_2</span>
+<span class="font-label-bold text-label-bold">Inventory</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant dark:text-on-primary-container p-3 hover:bg-surface-container-highest dark:hover:bg-on-primary-fixed-variant rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant dark:text-on-primary-container p-3 hover:bg-surface-container-highest dark:hover:bg-on-primary-fixed-variant rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-bold text-label-bold">Reports</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-stack-sm pt-stack-md border-t border-outline-variant">
+<a class="flex items-center gap-stack-md text-on-surface-variant dark:text-on-primary-container p-3 hover:bg-surface-container-highest dark:hover:bg-on-primary-fixed-variant rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-bold text-label-bold">Settings</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant dark:text-on-primary-container p-3 hover:bg-surface-container-highest dark:hover:bg-on-primary-fixed-variant rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="lock_open">lock_open</span>
+<span class="font-label-bold text-label-bold">Switch User</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopNavBar (Mobile Only) -->
+<header class="bg-surface-container-lowest dark:bg-primary docked full-width top-0 border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-margin-mobile h-touch-target-min md:hidden z-40 sticky">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">BistroFlow</span>
+<div class="flex gap-2">
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full cursor-pointer active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</header>
+<div class="p-margin-mobile md:p-margin-desktop flex-1 flex flex-col gap-stack-lg">
+<!-- Header Actions -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-stack-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg">Inventory Management</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Real-time stock control and recipe yield analysis.</p>
+</div>
+<div class="flex flex-wrap gap-stack-sm">
+<button class="h-touch-target-min px-4 bg-secondary text-on-secondary font-label-bold text-label-bold rounded-lg flex items-center gap-2 hover:bg-opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+                        Stock In
+                    </button>
+<button class="h-touch-target-min px-4 border-2 border-primary text-primary font-label-bold text-label-bold rounded-lg flex items-center gap-2 hover:bg-surface-container-low active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="delete_sweep">delete_sweep</span>
+                        Wastage Log
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Stock Control Table (Takes up 2/3 on lg screens) -->
+<section class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+<div class="p-stack-md border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+<h3 class="font-headline-md text-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="inventory">inventory</span>
+                            Raw Material Stock Control
+                        </h3>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="pl-9 pr-4 py-2 border border-outline-variant rounded-lg bg-surface focus:border-secondary focus:ring-1 focus:ring-secondary outline-none font-body-md text-body-md w-48 sm:w-64 transition-all" placeholder="Search ingredients..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-bold text-label-sm uppercase tracking-wider">
+<th class="p-3 whitespace-nowrap">Ingredient</th>
+<th class="p-3 whitespace-nowrap">Category</th>
+<th class="p-3 text-right whitespace-nowrap">Current Stock</th>
+<th class="p-3 text-right whitespace-nowrap">Alert Threshold</th>
+<th class="p-3 whitespace-nowrap">Unit</th>
+<th class="p-3 text-right whitespace-nowrap">Cost / Unit</th>
+<th class="p-3 text-center whitespace-nowrap">Status</th>
+</tr>
+</thead>
+<tbody class="font-data-mono text-data-mono divide-y divide-outline-variant">
+<!-- Row 1 - Low Stock -->
+<tr class="hover:bg-surface-container-low transition-colors bg-error-container/20">
+<td class="p-3 font-semibold text-on-surface">Wagyu Beef A5</td>
+<td class="p-3 text-on-surface-variant">Meat</td>
+<td class="p-3 text-right text-error font-bold">2.5</td>
+<td class="p-3 text-right text-on-surface-variant">5.0</td>
+<td class="p-3 text-on-surface-variant">kg</td>
+<td class="p-3 text-right">$120.00</td>
+<td class="p-3 text-center">
+<span class="inline-flex items-center gap-1 bg-error text-on-error font-label-sm text-label-sm px-2 py-1 rounded-full whitespace-nowrap">
+<span class="material-symbols-outlined text-[14px]">warning</span> Low Stock
+                                        </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-3 font-semibold text-on-surface">Truffle Oil</td>
+<td class="p-3 text-on-surface-variant">Pantry</td>
+<td class="p-3 text-right">12</td>
+<td class="p-3 text-right text-on-surface-variant">3</td>
+<td class="p-3 text-on-surface-variant">Btls</td>
+<td class="p-3 text-right">$45.00</td>
+<td class="p-3 text-center">
+<span class="inline-flex items-center gap-1 bg-surface-container-highest text-on-surface font-label-sm text-label-sm px-2 py-1 rounded-full whitespace-nowrap">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Optimal
+                                        </span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-3 font-semibold text-on-surface">Organic Avocados</td>
+<td class="p-3 text-on-surface-variant">Produce</td>
+<td class="p-3 text-right">45</td>
+<td class="p-3 text-right text-on-surface-variant">20</td>
+<td class="p-3 text-on-surface-variant">kg</td>
+<td class="p-3 text-right">$8.50</td>
+<td class="p-3 text-center">
+<span class="inline-flex items-center gap-1 bg-surface-container-highest text-on-surface font-label-sm text-label-sm px-2 py-1 rounded-full whitespace-nowrap">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Optimal
+                                        </span>
+</td>
+</tr>
+<!-- Row 4 - Low Stock -->
+<tr class="hover:bg-surface-container-low transition-colors bg-error-container/20">
+<td class="p-3 font-semibold text-on-surface">Saffron Threads</td>
+<td class="p-3 text-on-surface-variant">Spices</td>
+<td class="p-3 text-right text-error font-bold">15</td>
+<td class="p-3 text-right text-on-surface-variant">50</td>
+<td class="p-3 text-on-surface-variant">g</td>
+<td class="p-3 text-right">$12.00</td>
+<td class="p-3 text-center">
+<span class="inline-flex items-center gap-1 bg-error text-on-error font-label-sm text-label-sm px-2 py-1 rounded-full whitespace-nowrap">
+<span class="material-symbols-outlined text-[14px]">warning</span> Low Stock
+                                        </span>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-3 font-semibold text-on-surface">Heavy Cream</td>
+<td class="p-3 text-on-surface-variant">Dairy</td>
+<td class="p-3 text-right">24</td>
+<td class="p-3 text-right text-on-surface-variant">10</td>
+<td class="p-3 text-on-surface-variant">L</td>
+<td class="p-3 text-right">$4.20</td>
+<td class="p-3 text-center">
+<span class="inline-flex items-center gap-1 bg-surface-container-highest text-on-surface font-label-sm text-label-sm px-2 py-1 rounded-full whitespace-nowrap">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Optimal
+                                        </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Menu Item Recipe Mappings (Right Col) -->
+<section class="lg:col-span-1 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col h-[600px] lg:h-auto">
+<div class="p-stack-md border-b border-outline-variant bg-surface-bright">
+<h3 class="font-headline-md text-headline-md flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary" data-icon="restaurant_menu">restaurant_menu</span>
+                            Recipe Mappings
+                        </h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Select a dish to view ingredient breakdown.</p>
+</div>
+<div class="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
+<!-- Dish Item (Active) -->
+<div class="border-2 border-secondary bg-surface-container-low rounded-lg p-3 cursor-pointer">
+<div class="flex justify-between items-center mb-2">
+<h4 class="font-label-bold text-label-bold text-on-surface">Truffle Mushroom Risotto</h4>
+<span class="bg-primary-container text-on-primary-container text-[10px] px-2 py-1 rounded-full font-bold">COST: $12.45</span>
+</div>
+<!-- Expanded Ingredients -->
+<div class="mt-3 pt-3 border-t border-outline-variant">
+<h5 class="font-label-sm text-label-sm text-on-surface-variant mb-2 uppercase tracking-wide">Ingredients &amp; Yield</h5>
+<ul class="space-y-2 font-data-mono text-[13px]">
+<li class="flex justify-between items-center">
+<span class="text-on-surface">Arborio Rice</span>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span>150g</span>
+<span class="text-error text-[10px] bg-error-container px-1 rounded">-5% yield</span>
+</div>
+</li>
+<li class="flex justify-between items-center">
+<span class="text-on-surface">Wild Mushrooms</span>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span>80g</span>
+<span class="text-error text-[10px] bg-error-container px-1 rounded">-15% yield</span>
+</div>
+</li>
+<li class="flex justify-between items-center">
+<span class="text-on-surface">Truffle Oil</span>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span>15ml</span>
+<span class="text-on-surface-variant text-[10px] px-1">0%</span>
+</div>
+</li>
+<li class="flex justify-between items-center">
+<span class="text-on-surface">Parmesan</span>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span>30g</span>
+<span class="text-on-surface-variant text-[10px] px-1">0%</span>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<!-- Dish Item (Inactive) -->
+<div class="border border-outline-variant hover:border-primary bg-surface-container-lowest rounded-lg p-3 cursor-pointer transition-colors">
+<div class="flex justify-between items-center">
+<h4 class="font-label-bold text-label-bold text-on-surface">Wagyu Ribeye Steak</h4>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+<!-- Dish Item (Inactive) -->
+<div class="border border-outline-variant hover:border-primary bg-surface-container-lowest rounded-lg p-3 cursor-pointer transition-colors">
+<div class="flex justify-between items-center">
+<h4 class="font-label-bold text-label-bold text-on-surface">Saffron Seafood Paella</h4>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Audit Log Section (Full width at bottom) -->
+<section class="lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden mt-stack-md">
+<div class="p-stack-md border-b border-outline-variant flex justify-between items-center bg-surface-bright cursor-pointer hover:bg-surface-container transition-colors">
+<h3 class="font-headline-md text-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="history">history</span>
+                            Stock Movement Audit Log
+                        </h3>
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+<!-- Collapsible content (expanded by default for demo) -->
+<div class="p-0 overflow-x-auto">
+<table class="w-full text-left border-collapse text-sm">
+<tbody class="font-data-mono divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low">
+<td class="p-3 text-on-surface-variant w-40">Today, 14:32</td>
+<td class="p-3"><span class="bg-error/10 text-error px-2 py-0.5 rounded text-xs font-bold mr-2">OUT</span> <span class="text-on-surface">Wagyu Beef A5</span></td>
+<td class="p-3 text-right text-on-surface font-semibold">-0.5 kg</td>
+<td class="p-3 text-on-surface-variant">POS Order #8892</td>
+<td class="p-3 text-on-surface-variant text-right">System</td>
+</tr>
+<tr class="hover:bg-surface-container-low">
+<td class="p-3 text-on-surface-variant w-40">Today, 11:15</td>
+<td class="p-3"><span class="bg-tertiary-fixed-dim/20 text-on-tertiary-container px-2 py-0.5 rounded text-xs font-bold mr-2">IN</span> <span class="text-on-surface">Heavy Cream</span></td>
+<td class="p-3 text-right text-on-surface font-semibold">+10 L</td>
+<td class="p-3 text-on-surface-variant">Purchase Order #PO-442</td>
+<td class="p-3 text-on-surface-variant text-right">J. Doe</td>
+</tr>
+<tr class="hover:bg-surface-container-low">
+<td class="p-3 text-on-surface-variant w-40">Yesterday, 22:45</td>
+<td class="p-3"><span class="bg-secondary-container/30 text-on-secondary-container px-2 py-0.5 rounded text-xs font-bold mr-2">WASTE</span> <span class="text-on-surface">Organic Avocados</span></td>
+<td class="p-3 text-right text-on-surface font-semibold">-2 kg</td>
+<td class="p-3 text-on-surface-variant">Spoilage (End of shift check)</td>
+<td class="p-3 text-on-surface-variant text-right">M. Smith</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</div>
+</main>
+</body></html>

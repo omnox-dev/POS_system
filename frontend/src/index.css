@@ -21,13 +21,20 @@
   padding: 0;
 }
 
+html {
+  font-size: 13.5px;
+}
+
 body {
   background-color: var(--wf-bg);
   color: var(--wf-text-main);
   font-family: var(--font-sans);
   min-height: 100vh;
-  line-height: 1.5;
+  line-height: 1.4;
 }
+
+
+
 
 /* App Header & Wireframe Switcher */
 .app-header {

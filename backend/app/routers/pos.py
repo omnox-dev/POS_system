@@ -145,6 +145,11 @@ def complete_order_billing(order_id: int, billing_data: schemas.OrderBilling, db
     if order.status == models.OrderStatus.BILLED.value:
         raise HTTPException(status_code=400, detail="Order has already been billed")
 
+    # Update customer phone on order if provided during checkout
+    if billing_data.customer_phone:
+        order.customer_phone = billing_data.customer_phone
+        crud.get_or_create_customer(db, order.customer_name or "Guest", billing_data.customer_phone)
+
     discount = billing_data.discount_amount
     redeemed_pts = 0.0
 
@@ -167,6 +172,7 @@ def complete_order_billing(order_id: int, billing_data: schemas.OrderBilling, db
     order.payment_mode = billing_data.payment_mode
     order.status = models.OrderStatus.BILLED.value
     db.commit()
+
 
     # Trigger Stock Deduction Engine (also awards 5% cashback loyalty points)
     deduction_result = process_order_stock_deduction(db=db, order=order)

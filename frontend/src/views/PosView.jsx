@@ -2,272 +2,267 @@ import React, { useState, useEffect } from 'react';
 import {
   fetchPosTables,
   fetchPosOrders,
-  processOrderBill,
-  splitOrderBill,
-  transferTable,
+  billOrder,
+  fetchCustomerByPhone,
+  transferOrderTable,
   appendItemsToOrder,
   voidOrderItem,
-  simulateDigitalPayment,
-  lookupCustomerLoyalty,
-  fetchKioskMenu
+  payDigitalPayment
 } from '../api/client';
 import ThermalReceiptModal from '../components/ThermalReceiptModal';
-import { LayoutGrid, Receipt, Split, CheckSquare, Zap, ArrowRightLeft, PlusCircle, Trash2, QrCode, Award, Printer } from 'lucide-react';
 
 export default function PosView() {
   const [tables, setTables] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [menuItems, setMenuItems] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [discount, setDiscount] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0.0);
   const [taxPercentage, setTaxPercentage] = useState(5.0);
   const [paymentMode, setPaymentMode] = useState('UPI');
-  const [splitCount, setSplitCount] = useState(2);
-  const [splitResult, setSplitResult] = useState(null);
-  const [billingResponse, setBillingResponse] = useState(null);
-  const [loading, setLoading] = useState(false);
 
-  // Modals & Customer Loyalty state
-  const [showTransferModal, setShowTransferModal] = useState(false);
-  const [targetTableId, setTargetTableId] = useState('');
-  const [showAppendModal, setShowAppendModal] = useState(false);
-  const [selectedAppendMenuItem, setSelectedAppendMenuItem] = useState('');
-  const [appendQty, setAppendQty] = useState(1);
-
+  // Customer Loyalty State
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerLoyalty, setCustomerLoyalty] = useState(null);
-  const [redeemPoints, setRedeemPoints] = useState(0);
+  const [redeemPoints, setRedeemPoints] = useState(0.0);
 
-  const [digitalPayResult, setDigitalPayResult] = useState(null);
+  // Billing & Print Modal State
+  const [billingResult, setBillingResult] = useState(null);
+  const [showThermalReceipt, setShowThermalReceipt] = useState(false);
+
+  // Table Transfer Modal State
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [targetTableId, setTargetTableId] = useState('');
+
+  // Digital Payment Simulation State
   const [showDigitalPayModal, setShowDigitalPayModal] = useState(false);
-  const [selectedOrderForPrint, setSelectedOrderForPrint] = useState(null);
+  const [digitalPayResult, setDigitalPayResult] = useState(null);
+
+  // Resizable Right Cart Panel State
+  const [cartWidth, setCartWidth] = useState(380);
+  const [isResizingCart, setIsResizingCart] = useState(false);
+
+  const handleCartResizeStart = (e) => {
+    e.preventDefault();
+    setIsResizingCart(true);
+
+    const handleMouseMove = (moveEvent) => {
+      const windowWidth = window.innerWidth;
+      const newWidth = Math.min(Math.max(windowWidth - moveEvent.clientX, 280), 560);
+      setCartWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizingCart(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
 
   useEffect(() => {
-    loadData();
-    loadMenuItems();
+    loadPosData();
   }, []);
 
-  const loadData = async () => {
+  const loadPosData = async () => {
     try {
       const t = await fetchPosTables();
       const o = await fetchPosOrders();
       setTables(t);
       setOrders(o);
-      if (o.length > 0 && !selectedOrder) {
-        setSelectedOrder(o[0]);
+      if (selectedOrder) {
+        const updated = o.find(item => item.id === selectedOrder.id && item.status !== 'BILLED');
+        setSelectedOrder(updated || null);
       }
     } catch (err) {
       console.error("Error loading POS data:", err);
     }
   };
 
-  const loadMenuItems = async () => {
-    try {
-      const menu = await fetchKioskMenu();
-      setMenuItems(menu);
-      if (menu.length > 0) setSelectedAppendMenuItem(menu[0].id);
-    } catch (err) {
-      console.error("Error loading menu items:", err);
-    }
-  };
 
-  const handleSelectOrder = (order) => {
-    setSelectedOrder(order);
-    setSplitResult(null);
-    setBillingResponse(null);
-    setCustomerPhone(order.customer_phone || '');
-    setCustomerLoyalty(null);
-    setRedeemPoints(0);
-    if (order.customer_phone) {
-      handleLookupLoyalty(order.customer_phone);
-    }
-  };
-
-  const handleLookupLoyalty = async (phoneToLookup) => {
-    const p = phoneToLookup || customerPhone;
-    if (!p) return;
+  const handleLookupCustomer = async () => {
+    if (!customerPhone) return;
     try {
-      const cust = await lookupCustomerLoyalty(p);
-      setCustomerLoyalty(cust);
+      const res = await fetchCustomerByPhone(customerPhone);
+      setCustomerLoyalty(res);
     } catch (err) {
-      setCustomerLoyalty(null);
-    }
-  };
-
-  const handleTableTransfer = async () => {
-    if (!selectedOrder || !targetTableId) return;
-    try {
-      const updated = await transferTable(selectedOrder.id, parseInt(targetTableId));
-      alert(`Order ${selectedOrder.order_number} successfully transferred!`);
-      setShowTransferModal(false);
-      loadData();
-    } catch (err) {
-      alert("Transfer Error: " + err.message);
-    }
-  };
-
-  const handleAppendItem = async () => {
-    if (!selectedOrder || !selectedAppendMenuItem) return;
-    try {
-      const updated = await appendItemsToOrder(selectedOrder.id, [
-        { menu_item_id: parseInt(selectedAppendMenuItem), quantity: parseInt(appendQty), notes: "Mid-meal addition" }
-      ]);
-      setSelectedOrder(updated);
-      setShowAppendModal(false);
-      setAppendQty(1);
-      loadData();
-    } catch (err) {
-      alert("Error appending item: " + err.message);
+      alert("Customer lookup error: " + err.message);
     }
   };
 
   const handleVoidItem = async (orderItemId) => {
     if (!selectedOrder) return;
-    if (!window.confirm("Are you sure you want to void this item from the bill?")) return;
+    if (!window.confirm("Are you sure you want to void this item from the open bill?")) return;
     try {
-      const res = await voidOrderItem(selectedOrder.id, orderItemId, "Customer Cancellation");
-      setSelectedOrder(res.order);
-      loadData();
+      await voidOrderItem(selectedOrder.id, orderItemId, "Item voided by cashier");
+      loadPosData();
     } catch (err) {
       alert("Error voiding item: " + err.message);
     }
   };
 
-  const handleInitiateDigitalPay = async () => {
-    if (!selectedOrder) return;
-    const finalAmt = calculateFinalTotal();
+  const handleTransferTable = async () => {
+    if (!selectedOrder || !targetTableId) return;
     try {
-      const res = await simulateDigitalPayment(selectedOrder.id, paymentMode, parseFloat(finalAmt));
+      await transferOrderTable(selectedOrder.id, parseInt(targetTableId));
+      setShowTransferModal(false);
+      loadPosData();
+    } catch (err) {
+      alert("Error transferring table: " + err.message);
+    }
+  };
+
+  const handleSimulateDigitalPay = async () => {
+    if (!selectedOrder) return;
+    try {
+      const res = await payDigitalPayment(selectedOrder.id, "UPI_QR", selectedOrder.total_amount);
       setDigitalPayResult(res);
       setShowDigitalPayModal(true);
     } catch (err) {
-      alert("Digital Pay Error: " + err.message);
+      alert("Payment Gateway simulation error: " + err.message);
     }
   };
 
-  const handleSplitBill = async () => {
+  // Settlement & Deduction Breakdown Summary Modal State
+  const [showDeductionSummaryModal, setShowDeductionSummaryModal] = useState(false);
+
+  const handleFinalBilling = async () => {
     if (!selectedOrder) return;
     try {
-      const res = await splitOrderBill(selectedOrder.id, splitCount);
-      setSplitResult(res);
+      const res = await billOrder(selectedOrder.id, {
+        discount_amount: parseFloat(discountAmount) || 0.0,
+        tax_percentage: parseFloat(taxPercentage) || 5.0,
+        payment_mode: paymentMode,
+        customer_phone: customerPhone || null,
+        redeem_loyalty_points: parseFloat(redeemPoints) || 0.0
+      });
+      setBillingResult(res);
+      setShowDeductionSummaryModal(true);
+      setSelectedOrder(null);
+      setDiscountAmount('');
+      setTaxPercentage('5');
+      setPaymentMode('CASH');
+      setCustomerPhone('');
+      setCustomerLoyalty(null);
+      setRedeemPoints(0.0);
+      loadPosData();
+
     } catch (err) {
-      alert("Error splitting bill: " + err.message);
+      alert("Error generating bill: " + err.message);
     }
   };
 
-  const handleCompleteBilling = async () => {
-    if (!selectedOrder) return;
-    setLoading(true);
 
-    const payload = {
-      discount_amount: parseFloat(discount) || 0.0,
-      tax_percentage: parseFloat(taxPercentage) || 5.0,
-      payment_mode: paymentMode,
-      redeem_loyalty_points: parseFloat(redeemPoints) || 0.0
-    };
-
-    try {
-      const res = await processOrderBill(selectedOrder.id, payload);
-      setBillingResponse(res);
-      loadData();
-    } catch (err) {
-      alert("Error processing bill: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const activeOrders = orders.filter(o => o.status !== 'BILLED' && o.status !== 'CANCELLED');
-
-  const calculateFinalTotal = () => {
-    if (!selectedOrder) return 0;
-    const sub = selectedOrder.subtotal || 0;
-    const disc = (parseFloat(discount) || 0) + (parseFloat(redeemPoints) || 0);
-    const taxable = Math.max(0, sub - disc);
-    const tax = taxable * ((parseFloat(taxPercentage) || 5) / 100);
-    return (taxable + tax).toFixed(2);
-  };
+  // Subtotal & Calculations
+  const subtotal = selectedOrder ? selectedOrder.subtotal : 0.0;
+  const netDiscount = parseFloat(discountAmount || 0) + parseFloat(redeemPoints || 0);
+  const taxableSubtotal = Math.max(0, subtotal - netDiscount);
+  const taxAmount = (taxableSubtotal * (parseFloat(taxPercentage) || 0)) / 100;
+  const grandTotal = taxableSubtotal + taxAmount;
 
   return (
-    <div className="view-grid-2">
-      {/* Left Column: Tables Grid & Active KOT Orders */}
-      <div>
-        {/* Table Management Frame */}
-        <div className="wf-panel">
-          <div className="wf-panel-header">
-            <span className="wf-title"><LayoutGrid size={18} /> Restaurant Table Layout Plan</span>
-            <span className="wf-badge wf-badge-info">{tables.length} Total Tables</span>
+    <div className="flex flex-col md:flex-row h-[calc(100vh-2rem)] w-full bg-background rounded-xl border border-outline-variant overflow-hidden shadow-lg">
+      {/* Center Section: Floor Plan Table Map & Orders Queue */}
+      <div className="flex-1 flex flex-col p-6 gap-6 h-full overflow-y-auto custom-scrollbar">
+        {/* Table Layout Plan Grid */}
+        <section className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-sm flex flex-col">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-headline-md text-xl font-bold text-on-surface flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">table_restaurant</span>
+              Floor Plan & Table Layout
+            </h2>
+            <div className="flex gap-4 text-xs font-label-bold">
+              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-tertiary-fixed-dim border border-tertiary-fixed"></span> Available</div>
+              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-secondary-container border border-secondary"></span> Occupied</div>
+              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-primary-fixed-dim border border-primary"></span> Reserved</div>
+            </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px' }}>
-            {tables.map(t => {
-              const isOccupied = t.status === 'OCCUPIED';
-              return (
-                <div
-                  key={t.id}
-                  className="wf-card"
-                  style={{
-                    textAlign: 'center',
-                    padding: '12px',
-                    borderColor: isOccupied ? 'var(--wf-warning)' : 'var(--wf-border)',
-                    backgroundColor: isOccupied ? 'rgba(245, 158, 11, 0.05)' : 'var(--wf-card-bg)'
-                  }}
-                >
-                  <div style={{ fontWeight: 'bold', fontSize: '1rem' }}>{t.table_number}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)', margin: '4px 0' }}>Cap: {t.capacity} Seats</div>
-                  <span className={`wf-badge ${isOccupied ? 'wf-badge-warning' : 'wf-badge-normal'}`}>
-                    {t.status}
-                  </span>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+            {tables.map(t => (
+              <button
+                key={t.id}
+                className={`aspect-square rounded-xl border-2 flex flex-col items-center justify-center p-2 transition-all active:scale-95 ${
+                  t.status === 'AVAILABLE'
+                    ? 'border-tertiary-fixed-dim bg-surface hover:bg-surface-container-highest'
+                    : t.status === 'OCCUPIED'
+                    ? 'border-secondary-container bg-secondary-fixed text-on-secondary-container font-bold shadow-sm'
+                    : 'border-primary-fixed-dim bg-surface-container'
+                }`}
+                onClick={() => {
+                  const activeOrd = orders.find(o => o.table_id === t.id && o.status !== 'BILLED');
+                  if (activeOrd) setSelectedOrder(activeOrd);
+                }}
+              >
+                <span className="material-symbols-outlined text-2xl mb-1">table_restaurant</span>
+                <span className="font-bold text-sm">Table {t.table_number}</span>
+                <span className="text-[11px] opacity-80">Cap: {t.capacity}</span>
+              </button>
+            ))}
           </div>
-        </div>
+        </section>
 
-        {/* KOT & Orders Queue Frame */}
-        <div className="wf-panel">
-          <div className="wf-panel-header">
-            <span className="wf-title"><Receipt size={18} /> Kitchen & Active Orders Queue</span>
-            <span className="wf-badge wf-badge-warning">{activeOrders.length} Pending Bills</span>
+        {/* Active Orders Queue */}
+        <section className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-sm flex-1 flex flex-col min-h-0">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-headline-md text-xl font-bold text-on-surface">Active Orders Queue</h2>
+            <span className="bg-primary text-on-primary text-xs font-bold px-3 py-1 rounded-full">
+              {orders.filter(o => o.status !== 'BILLED').length} Active Tabs
+            </span>
           </div>
 
-          <div className="wf-table-container">
-            <table className="wf-table">
-              <thead>
+          <div className="overflow-y-auto custom-scrollbar flex-1">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-container sticky top-0 z-10">
                 <tr>
-                  <th>Order #</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                  <th>Subtotal</th>
-                  <th>Action</th>
+                  <th className="p-3 text-xs font-bold text-on-surface-variant border-b border-outline-variant">Order #</th>
+                  <th className="p-3 text-xs font-bold text-on-surface-variant border-b border-outline-variant">Table</th>
+                  <th className="p-3 text-xs font-bold text-on-surface-variant border-b border-outline-variant">Type</th>
+                  <th className="p-3 text-xs font-bold text-on-surface-variant border-b border-outline-variant">Status</th>
+                  <th className="p-3 text-xs font-bold text-on-surface-variant border-b border-outline-variant text-right">Subtotal</th>
+                  <th className="p-3 text-xs font-bold text-on-surface-variant border-b border-outline-variant text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {activeOrders.length === 0 ? (
+                {orders.filter(o => o.status !== 'BILLED').length === 0 ? (
                   <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', color: 'var(--wf-text-muted)' }}>
-                      No active pending orders. Place an order from Kiosk view.
-                    </td>
+                    <td colSpan={6} className="p-8 text-center text-on-surface-variant">No open orders. Place an order from the Kiosk view.</td>
                   </tr>
                 ) : (
-                  activeOrders.map(ord => (
+                  orders.filter(o => o.status !== 'BILLED').map(o => (
                     <tr
-                      key={ord.id}
-                      style={{
-                        backgroundColor: selectedOrder?.id === ord.id ? 'rgba(56, 189, 248, 0.1)' : 'transparent'
-                      }}
+                      key={o.id}
+                      className={`border-b border-outline-variant transition-colors hover:bg-surface-container-low ${
+                        selectedOrder?.id === o.id ? 'bg-primary-fixed/40 font-bold' : ''
+                      }`}
                     >
-                      <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{ord.order_number}</td>
-                      <td><span className="wf-badge wf-badge-info">{ord.order_type}</span></td>
-                      <td><span className="wf-badge wf-badge-warning">{ord.status}</span></td>
-                      <td style={{ fontFamily: 'var(--font-mono)' }}>₹{ord.subtotal.toFixed(2)}</td>
-                      <td>
+                      <td className="p-3 font-mono text-sm font-bold text-primary">{o.order_number}</td>
+                      <td className="p-3 font-bold text-sm">{o.table_number ? `T-${o.table_number}` : 'Takeaway'}</td>
+                      <td className="p-3 text-xs">{o.order_type}</td>
+                      <td className="p-3">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${
+                          o.status === 'PREPARING'
+                            ? 'bg-secondary-fixed text-on-secondary-fixed-variant'
+                            : o.status === 'SERVED'
+                            ? 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
+                            : 'bg-error-container text-on-error-container'
+                        }`}>
+                          <span className="material-symbols-outlined text-xs">local_fire_department</span>
+                          {o.status}
+                        </span>
+                      </td>
+                      <td className="p-3 text-right font-mono font-bold text-sm">₹{o.total_amount.toFixed(2)}</td>
+                      <td className="p-3 text-right">
                         <button
-                          className={`wf-btn ${selectedOrder?.id === ord.id ? 'wf-btn-primary' : 'wf-btn-secondary'}`}
-                          style={{ padding: '4px 10px', fontSize: '0.75rem' }}
-                          onClick={() => handleSelectOrder(ord)}
+                          className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all active:scale-95 ${
+                            selectedOrder?.id === o.id
+                              ? 'bg-primary text-on-primary shadow-sm'
+                              : 'bg-surface border border-outline text-on-surface hover:bg-surface-container-highest'
+                          }`}
+                          onClick={() => setSelectedOrder(o)}
                         >
-                          Select for Billing
+                          {selectedOrder?.id === o.id ? 'Active' : 'Select'}
                         </button>
                       </td>
                     </tr>
@@ -276,311 +271,369 @@ export default function PosView() {
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
       </div>
 
-      {/* Right Column: Billing Terminal & Extensions */}
-      <div>
-        <div className="wf-panel">
-          <div className="wf-panel-header">
-            <span className="wf-title"><CheckSquare size={18} /> Cashier Billing Terminal</span>
+      {/* Right Panel: Billing Checkout Terminal */}
+      <aside
+        className="relative bg-surface-container-lowest border-l border-outline-variant h-full flex flex-col shadow-xl shrink-0 group"
+        style={{ width: `${cartWidth}px` }}
+      >
+        {/* Left Drag Handle for Cart Pane */}
+        <div
+          className="absolute top-0 left-0 bottom-0 w-2 cursor-col-resize hover:bg-secondary/40 active:bg-secondary transition-colors z-50 flex items-center justify-center -ml-1"
+          onMouseDown={handleCartResizeStart}
+          title="Drag to resize checkout panel width"
+        >
+          <div className="w-0.5 h-8 bg-outline-variant/60 rounded-full group-hover:bg-secondary"></div>
+        </div>
+
+        {/* Checkout Header */}
+        <div className="p-4 border-b border-outline-variant bg-surface flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="font-bold text-lg text-on-surface">
+                {selectedOrder ? (selectedOrder.table_number ? `Table ${selectedOrder.table_number}` : 'Takeaway Counter') : 'Select an Order'}
+              </h3>
+              <p className="font-mono text-xs text-on-surface-variant">
+                {selectedOrder ? `Order #${selectedOrder.order_number}` : 'No active order selected'}
+              </p>
+            </div>
             {selectedOrder && (
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <span className="wf-badge wf-badge-info">{selectedOrder.order_number}</span>
-                <button className="wf-btn wf-btn-secondary" style={{ padding: '2px 6px' }} onClick={() => setSelectedOrderForPrint(selectedOrder)}>
-                  <Printer size={14} /> Thermal Ticket
-                </button>
-              </div>
+              <button
+                className="w-10 h-10 rounded-full bg-surface-container-highest hover:bg-secondary-fixed flex items-center justify-center text-on-surface transition-colors"
+                title="Transfer Table"
+                onClick={() => setShowTransferModal(true)}
+              >
+                <span className="material-symbols-outlined">swap_horiz</span>
+              </button>
             )}
           </div>
-
-          {!selectedOrder ? (
-            <div style={{ textAlign: 'center', padding: '40px 10px', color: 'var(--wf-text-muted)' }}>
-              Select an active order from the queue to process billing.
-            </div>
-          ) : selectedOrder.status === 'BILLED' ? (
-            <div style={{ padding: '20px', textAlign: 'center', background: 'rgba(34, 197, 94, 0.1)', border: '1px solid var(--wf-success)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--wf-success)', fontWeight: 'bold', fontSize: '1.1rem' }}>Order Already Billed</div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--wf-text-muted)', marginTop: '4px' }}>
-                Stock deduction has already executed for {selectedOrder.order_number}.
-              </p>
-              <button className="wf-btn wf-btn-primary" style={{ marginTop: '12px' }} onClick={() => setSelectedOrderForPrint(selectedOrder)}>
-                <Printer size={16} /> Print Receipt
-              </button>
-            </div>
-          ) : (
-            <div>
-              {/* Table Transfer & Add Items Toolbar */}
-              <div className="flex-between" style={{ marginBottom: '12px', background: 'var(--wf-card-bg)', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--wf-border)' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>
-                  {selectedOrder.table_id ? `Assigned: Table #${selectedOrder.table_id}` : 'Takeaway / Delivery'}
-                </span>
-                <div className="flex-gap-8">
-                  {selectedOrder.table_id && (
-                    <button className="wf-btn wf-btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }} onClick={() => setShowTransferModal(true)}>
-                      <ArrowRightLeft size={14} /> Transfer Table
-                    </button>
-                  )}
-                  <button className="wf-btn wf-btn-primary" style={{ padding: '4px 8px', fontSize: '0.75rem' }} onClick={() => setShowAppendModal(true)}>
-                    <PlusCircle size={14} /> Add Items to Bill
-                  </button>
-                </div>
-              </div>
-
-              {/* Items Breakdown with Void Action */}
-              <div style={{ marginBottom: '16px', background: 'var(--wf-card-bg)', border: '1px solid var(--wf-border)', padding: '12px', borderRadius: '6px' }}>
-                <div style={{ fontSize: '0.85rem', fontWeight: 'bold', marginBottom: '8px', borderBottom: '1px solid var(--wf-border)', paddingBottom: '4px' }}>
-                  Ordered Items ({selectedOrder.items?.length || 0})
-                </div>
-                {selectedOrder.items?.map((it, idx) => (
-                  <div key={idx} className="flex-between" style={{ padding: '4px 0', fontSize: '0.85rem' }}>
-                    <div>
-                      <span>{it.quantity}× {it.menu_item_name}</span>
-                      {it.notes && <span style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)', marginLeft: '6px' }}>({it.notes})</span>}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontFamily: 'var(--font-mono)' }}>₹{(it.unit_price * it.quantity).toFixed(2)}</span>
-                      <button
-                        style={{ background: 'none', border: 'none', color: 'var(--wf-danger)', cursor: 'pointer' }}
-                        title="Void item"
-                        onClick={() => handleVoidItem(it.id)}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Customer Loyalty Section */}
-              <div style={{ padding: '10px 12px', background: 'rgba(56, 189, 248, 0.05)', border: '1px solid var(--wf-border)', borderRadius: '6px', marginBottom: '16px' }}>
-                <div className="flex-between" style={{ marginBottom: '6px' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--wf-accent)' }}>
-                    <Award size={14} /> Customer Loyalty Program (5% Cashback)
-                  </span>
-                </div>
-                <div className="flex-gap-8" style={{ marginBottom: '6px' }}>
-                  <input
-                    type="text"
-                    className="wf-input"
-                    placeholder="Customer Phone #"
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    style={{ fontSize: '0.8rem', padding: '4px 8px' }}
-                  />
-                  <button className="wf-btn wf-btn-secondary" style={{ padding: '4px 8px', fontSize: '0.75rem' }} onClick={() => handleLookupLoyalty()}>
-                    Lookup
-                  </button>
-                </div>
-                {customerLoyalty && (
-                  <div className="flex-between" style={{ fontSize: '0.8rem', color: 'var(--wf-success)', fontFamily: 'var(--font-mono)' }}>
-                    <span>{customerLoyalty.name} ({customerLoyalty.loyalty_points} Points)</span>
-                    <input
-                      type="number"
-                      className="wf-input"
-                      style={{ width: '80px', padding: '2px 4px', fontSize: '0.8rem' }}
-                      placeholder="Redeem"
-                      value={redeemPoints}
-                      max={customerLoyalty.loyalty_points}
-                      onChange={(e) => setRedeemPoints(e.target.value)}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Discount & Tax Form */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
-                <div className="flex-between">
-                  <label style={{ fontSize: '0.85rem', color: 'var(--wf-text-muted)' }}>Subtotal:</label>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>₹{selectedOrder.subtotal.toFixed(2)}</span>
-                </div>
-
-                <div className="flex-gap-8">
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)', display: 'block', marginBottom: '2px' }}>Discount (₹):</label>
-                    <input
-                      type="number"
-                      className="wf-input"
-                      value={discount}
-                      onChange={(e) => setDiscount(e.target.value)}
-                      placeholder="0.00"
-                    />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)', display: 'block', marginBottom: '2px' }}>GST Tax (%):</label>
-                    <input
-                      type="number"
-                      className="wf-input"
-                      value={taxPercentage}
-                      onChange={(e) => setTaxPercentage(e.target.value)}
-                      placeholder="5.0"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex-between" style={{ marginBottom: '4px' }}>
-                    <label style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)' }}>Payment Mode:</label>
-                    <button className="wf-btn wf-btn-secondary" style={{ padding: '2px 6px', fontSize: '0.7rem' }} onClick={handleInitiateDigitalPay}>
-                      <QrCode size={12} /> Test Digital Payment QR
-                    </button>
-                  </div>
-                  <select
-                    className="wf-input"
-                    value={paymentMode}
-                    onChange={(e) => setPaymentMode(e.target.value)}
-                  >
-                    <option value="UPI">UPI / PhonePe / Paytm</option>
-                    <option value="Card">Credit / Debit Card Swipe</option>
-                    <option value="Cash">Cash</option>
-                    <option value="Digital Payment">Simulated Gateway</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Split Bill Calculator Tool */}
-              <div style={{ padding: '10px', background: 'var(--wf-card-bg)', border: '1px dashed var(--wf-border-dashed)', borderRadius: '6px', marginBottom: '16px' }}>
-                <div className="flex-between" style={{ marginBottom: '4px' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Split size={14} /> Split Bill Calculator
-                  </span>
-                  <div className="flex-gap-8">
-                    <input
-                      type="number"
-                      className="wf-input"
-                      style={{ width: '50px', padding: '2px 4px', textAlign: 'center', fontSize: '0.8rem' }}
-                      value={splitCount}
-                      min="2"
-                      onChange={(e) => setSplitCount(parseInt(e.target.value) || 2)}
-                    />
-                    <button className="wf-btn wf-btn-secondary" style={{ padding: '2px 6px', fontSize: '0.75rem' }} onClick={handleSplitBill}>
-                      Calculate
-                    </button>
-                  </div>
-                </div>
-                {splitResult && (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--wf-accent)', fontFamily: 'var(--font-mono)', textAlign: 'right' }}>
-                    Split between {splitResult.split_count} people: <strong>₹{splitResult.per_person_amount} / person</strong>
-                  </div>
-                )}
-              </div>
-
-              {/* Total Calculation */}
-              <div className="flex-between" style={{ padding: '12px 0', borderTop: '1px solid var(--wf-border)', fontSize: '1.2rem', fontWeight: 'bold' }}>
-                <span>Final Payable:</span>
-                <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--wf-success)' }}>₹{calculateFinalTotal()}</span>
-              </div>
-
-              <button
-                className="wf-btn wf-btn-primary"
-                style={{ width: '100%', padding: '12px', justifyContent: 'center', marginTop: '8px' }}
-                onClick={handleCompleteBilling}
-                disabled={loading}
-              >
-                <Zap size={16} /> {loading ? "Processing & Deducting Stock..." : "Collect Payment & Deduct Inventory"}
-              </button>
-            </div>
-          )}
         </div>
 
-        {/* Live Inventory Auto-Deduction Log Output */}
-        {billingResponse && (
-          <div className="wf-panel" style={{ borderColor: 'var(--wf-accent)', marginTop: '20px' }}>
-            <div className="wf-panel-header">
-              <span className="wf-title" style={{ color: 'var(--wf-accent)' }}>
-                ⚡ Auto Inventory Stock Deduction Triggered
-              </span>
-              <span className="wf-badge wf-badge-normal">DB Synced</span>
-            </div>
-            <div className="wf-receipt-box">
-              <div style={{ color: 'var(--wf-success)', fontWeight: 'bold', marginBottom: '8px' }}>
-                ✅ Order Billed & Stock Movement Log Created
-              </div>
-              <div style={{ fontSize: '0.8rem', marginBottom: '8px' }}>
-                Stock deduction calculated for recipe ingredients:
-              </div>
-              {billingResponse.inventory_deduction?.deductions?.map((d, idx) => (
-                <div key={idx} className="flex-between" style={{ fontSize: '0.8rem', padding: '2px 0' }}>
-                  <span>Ingredient: <strong>{d.ingredient}</strong></span>
-                  <span style={{ color: 'var(--wf-danger)' }}>-{d.used} {d.unit} (Stock now: {d.new_stock} {d.unit})</span>
+        {/* Itemized Bill List */}
+        {!selectedOrder ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-on-surface-variant text-center">
+            <span className="material-symbols-outlined text-4xl text-outline mb-2">receipt_long</span>
+            <p className="font-bold text-sm">No Order Selected</p>
+            <p className="text-xs text-on-surface-variant mt-1">Select an active order from the left queue to open the billing terminal.</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+              {selectedOrder.items?.map((item) => (
+                <div key={item.id} className="flex justify-between items-center p-2.5 rounded-lg border border-outline-variant bg-surface-container-low">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-on-surface">{item.menu_item_name}</span>
+                      <span className="px-1.5 py-0.5 rounded text-[11px] font-bold bg-surface-container-highest text-on-surface-variant">
+                        x{item.quantity}
+                      </span>
+                    </div>
+                    <p className="font-mono text-xs text-on-surface-variant">₹{item.unit_price.toFixed(2)} ea</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono font-bold text-sm">₹{(item.quantity * item.unit_price).toFixed(2)}</span>
+                    <button
+                      className="text-outline hover:text-error transition-colors"
+                      title="Void Item"
+                      onClick={() => handleVoidItem(item.id)}
+                    >
+                      <span className="material-symbols-outlined text-lg">delete</span>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
-        )}
-      </div>
 
-      {/* Transfer Table Modal */}
+            {/* Customer Loyalty Section */}
+            <div className="p-4 border-t border-outline-variant bg-surface-container-lowest">
+              <div className="flex gap-2">
+                <input
+                  className="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface text-sm font-mono outline-none focus:border-secondary"
+                  placeholder="Customer Phone No."
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                />
+                <button
+                  className="px-4 py-2 bg-secondary-container text-on-secondary-container rounded-lg font-bold text-xs whitespace-nowrap hover:bg-secondary-fixed"
+                  onClick={handleLookupCustomer}
+                >
+                  Lookup
+                </button>
+              </div>
+
+              {customerLoyalty && (
+                <div className="mt-2 p-2.5 bg-tertiary-container/10 border border-tertiary-container rounded-lg text-xs space-y-1">
+                  <div className="font-bold text-on-tertiary-container">{customerLoyalty.name}</div>
+                  <div className="flex justify-between font-mono">
+                    <span>Available Loyalty Points:</span>
+                    <span className="font-bold">{customerLoyalty.loyalty_points.toFixed(1)} pts</span>
+                  </div>
+                  {customerLoyalty.loyalty_points > 0 && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <input
+                        type="number"
+                        className="w-20 px-2 py-1 border border-outline-variant rounded text-xs font-mono"
+                        placeholder="Redeem pts"
+                        value={redeemPoints}
+                        onChange={(e) => setRedeemPoints(e.target.value)}
+                      />
+                      <span className="text-[11px] text-on-surface-variant">Max discount</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Discounts, Tax & Payment Totals */}
+            <div className="p-4 bg-surface-container border-t border-outline-variant flex flex-col gap-3">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[11px] text-on-surface-variant font-bold block mb-1">Discount (₹)</label>
+                  <input
+                    type="number"
+                    className="w-full px-2.5 py-1.5 border border-outline-variant rounded-lg bg-surface-container-lowest text-xs font-mono"
+                    value={discountAmount}
+                    onChange={(e) => setDiscountAmount(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-on-surface-variant font-bold block mb-1">GST Tax (%)</label>
+                  <input
+                    type="number"
+                    className="w-full px-2.5 py-1.5 border border-outline-variant rounded-lg bg-surface-container-lowest text-xs font-mono"
+                    value={taxPercentage}
+                    onChange={(e) => setTaxPercentage(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1 border-t border-outline-variant pt-2 text-xs">
+                <div className="flex justify-between text-on-surface-variant font-mono">
+                  <span>Subtotal</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-on-surface-variant font-mono">
+                  <span>Discounts & Points</span>
+                  <span>-₹{netDiscount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-on-surface-variant font-mono">
+                  <span>GST Tax ({taxPercentage}%)</span>
+                  <span>₹{taxAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-base font-bold text-on-surface mt-1 pt-1 border-t border-outline-variant font-mono">
+                  <span>Grand Total</span>
+                  <span className="text-primary text-lg">₹{grandTotal.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* Payment Methods */}
+              <div>
+                <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">Payment Method</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {['UPI', 'Card', 'Cash'].map((mode) => (
+                    <button
+                      key={mode}
+                      className={`py-2 flex flex-col items-center justify-center rounded-lg text-xs font-bold transition-all ${
+                        paymentMode === mode
+                          ? 'border-2 border-secondary bg-surface-container-lowest text-secondary shadow-sm'
+                          : 'border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:text-on-surface'
+                      }`}
+                      onClick={() => setPaymentMode(mode)}
+                    >
+                      <span className="material-symbols-outlined text-lg mb-0.5">
+                        {mode === 'UPI' ? 'qr_code_scanner' : mode === 'Card' ? 'credit_card' : 'payments'}
+                      </span>
+                      {mode}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {paymentMode === 'UPI' && (
+                <button
+                  className="w-full py-2 bg-surface-container-highest text-primary rounded-lg text-xs font-bold hover:bg-secondary-fixed flex items-center justify-center gap-1"
+                  onClick={handleSimulateDigitalPay}
+                >
+                  <span className="material-symbols-outlined text-sm">qr_code</span>
+                  Simulate Gateway UPI QR Code
+                </button>
+              )}
+
+              {/* Final Billing Button */}
+              <button
+                className="w-full py-3.5 bg-secondary text-on-secondary rounded-xl font-bold text-base hover:bg-secondary-container hover:text-on-secondary-container shadow-md transition-all active:scale-95 flex items-center justify-center gap-2 mt-1"
+                onClick={handleFinalBilling}
+              >
+                <span className="material-symbols-outlined">receipt_long</span>
+                Pay & Deduct Stock
+              </button>
+            </div>
+          </>
+        )}
+      </aside>
+
+      {/* Modal 1: Table Transfer Popup */}
       {showTransferModal && (
-        <div className="wf-modal-overlay">
-          <div className="wf-modal-card" style={{ maxWidth: '360px' }}>
-            <h4>Transfer Order #{selectedOrder?.order_number}</h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--wf-text-muted)', marginBottom: '12px' }}>
-              Select target table to move active dine-in tab:
+        <div className="fixed inset-0 bg-primary/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 max-w-sm w-full shadow-2xl">
+            <h4 className="font-bold text-lg mb-2">Transfer Table Bill</h4>
+            <p className="text-xs text-on-surface-variant mb-4">
+              Select destination table to move Order #{selectedOrder?.order_number}:
             </p>
-            <select className="wf-input" value={targetTableId} onChange={(e) => setTargetTableId(e.target.value)} style={{ marginBottom: '16px' }}>
-              <option value="">-- Select Target Table --</option>
-              {tables.map(t => (
-                <option key={t.id} value={t.id}>{t.table_number} ({t.status})</option>
+            <select
+              className="w-full p-2.5 border border-outline-variant rounded-lg text-sm font-mono mb-4 bg-surface"
+              value={targetTableId}
+              onChange={(e) => setTargetTableId(e.target.value)}
+            >
+              <option value="">Select Target Table</option>
+              {tables.filter(t => t.id !== selectedOrder?.table_id).map(t => (
+                <option key={t.id} value={t.id}>
+                  Table {t.table_number} ({t.status})
+                </option>
               ))}
             </select>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button className="wf-btn wf-btn-secondary" onClick={() => setShowTransferModal(false)}>Cancel</button>
-              <button className="wf-btn wf-btn-primary" onClick={handleTableTransfer}>Confirm Transfer</button>
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-surface-container-highest text-on-surface rounded-lg text-xs font-bold"
+                onClick={() => setShowTransferModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-primary text-on-primary rounded-lg text-xs font-bold"
+                onClick={handleTransferTable}
+              >
+                Confirm Transfer
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Append Items Modal */}
-      {showAppendModal && (
-        <div className="wf-modal-overlay">
-          <div className="wf-modal-card" style={{ maxWidth: '400px' }}>
-            <h4>Append Mid-Meal Items to Order</h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--wf-text-muted)', marginBottom: '12px' }}>
-              Select item and quantity to add to open bill:
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' }}>
-              <select className="wf-input" value={selectedAppendMenuItem} onChange={(e) => setSelectedAppendMenuItem(e.target.value)}>
-                {menuItems.map(m => (
-                  <option key={m.id} value={m.id}>{m.name} - ₹{m.price}</option>
-                ))}
-              </select>
-              <input type="number" className="wf-input" min="1" value={appendQty} onChange={(e) => setAppendQty(e.target.value)} placeholder="Quantity" />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button className="wf-btn wf-btn-secondary" onClick={() => setShowAppendModal(false)}>Cancel</button>
-              <button className="wf-btn wf-btn-primary" onClick={handleAppendItem}>Add to Order</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Digital Payment QR Modal */}
+      {/* Modal 2: Digital Payment Gateway Simulator Popup */}
       {showDigitalPayModal && digitalPayResult && (
-        <div className="wf-modal-overlay">
-          <div className="wf-modal-card" style={{ maxWidth: '360px', textAlign: 'center' }}>
-            <h4 style={{ color: 'var(--wf-accent)' }}>Digital Payment Simulator</h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--wf-text-muted)', margin: '4px 0 12px 0' }}>
-              Scan QR code with UPI app to complete test payment:
-            </p>
-            <img src={digitalPayResult.qr_code_url} alt="UPI QR" style={{ width: '180px', height: '180px', margin: '0 auto 12px auto' }} />
-            <div style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Ref: {digitalPayResult.transaction_ref}</div>
-            <div style={{ fontSize: '0.8rem', color: 'var(--wf-success)', marginTop: '4px' }}>{digitalPayResult.message}</div>
-            <button className="wf-btn wf-btn-primary" style={{ marginTop: '16px', width: '100%', justifyContent: 'center' }} onClick={() => setShowDigitalPayModal(false)}>
-              Close Simulator
+        <div className="fixed inset-0 bg-primary/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 max-w-sm w-full text-center shadow-2xl">
+            <span className="material-symbols-outlined text-4xl text-secondary mb-2">qr_code_2</span>
+            <h4 className="font-bold text-lg mb-1">UPI Payment Gateway Simulator</h4>
+            <p className="text-xs text-on-surface-variant mb-3">Scan QR code using PhonePe / GooglePay / Paytm</p>
+            <div className="bg-surface p-4 rounded-lg border border-outline-variant font-mono text-xs break-all mb-4">
+              {digitalPayResult.qr_payload}
+            </div>
+            <div className="bg-tertiary-fixed text-on-tertiary-fixed-variant p-2 rounded text-xs font-bold mb-4">
+              Status: {digitalPayResult.status} (Txn: {digitalPayResult.transaction_id})
+            </div>
+            <button
+              className="w-full py-2 bg-primary text-on-primary rounded-lg text-xs font-bold"
+              onClick={() => setShowDigitalPayModal(false)}
+            >
+              Close & Proceed to Billing
             </button>
           </div>
         </div>
       )}
 
-      {/* Thermal Ticket Printer Modal */}
-      {selectedOrderForPrint && (
-        <ThermalReceiptModal
-          order={selectedOrderForPrint}
-          onClose={() => setSelectedOrderForPrint(null)}
-        />
+      {/* Modal 3: Order Billed & Raw Material Deduction Breakdown Summary Popup */}
+      {showDeductionSummaryModal && billingResult && (
+        <div className="fixed inset-0 bg-primary/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-surface-container-lowest rounded-2xl border-2 border-outline-variant p-6 max-w-lg w-full shadow-2xl space-y-4">
+            <div className="flex justify-between items-center border-b border-outline-variant/60 pb-3">
+              <div className="flex items-center gap-2 text-secondary">
+                <span className="material-symbols-outlined text-2xl">check_circle</span>
+                <h3 className="font-bold text-lg text-primary">Order Settled & Stock Deducted</h3>
+              </div>
+              <span className="bg-secondary-container text-on-secondary-container font-mono text-xs font-bold px-2.5 py-1 rounded-full border border-secondary-fixed">
+                {billingResult.order?.order_number}
+              </span>
+            </div>
+
+            {/* Settlement Summary Info */}
+            <div className="grid grid-cols-2 gap-2 bg-surface-container p-3 rounded-xl border border-outline-variant text-xs">
+              <div>
+                <span className="text-on-surface-variant font-medium">Payment Mode:</span>
+                <strong className="block text-primary uppercase font-bold">{billingResult.order?.payment_mode}</strong>
+              </div>
+              <div>
+                <span className="text-on-surface-variant font-medium">Total Paid:</span>
+                <strong className="block text-secondary font-bold text-sm">₹{billingResult.order?.total_amount?.toFixed(2)}</strong>
+              </div>
+              <div>
+                <span className="text-on-surface-variant font-medium">Discounts / Points:</span>
+                <strong className="block text-on-surface">₹{billingResult.order?.discount_amount?.toFixed(2)}</strong>
+              </div>
+              <div>
+                <span className="text-on-surface-variant font-medium">GST Tax (5%):</span>
+                <strong className="block text-on-surface">₹{billingResult.order?.tax_amount?.toFixed(2)}</strong>
+              </div>
+            </div>
+
+            {/* Inventory Stock Deductions Ledger */}
+            <div>
+              <h4 className="font-bold text-xs text-primary mb-2 flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-sm">inventory_2</span>
+                Automated Raw Material Stock Deductions:
+              </h4>
+              <div className="max-h-40 overflow-y-auto custom-scrollbar border border-outline-variant rounded-xl overflow-hidden">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-surface-container sticky top-0">
+                    <tr>
+                      <th className="p-2 font-bold text-on-surface-variant border-b border-outline-variant">Ingredient</th>
+                      <th className="p-2 font-bold text-on-surface-variant border-b border-outline-variant text-right">Deducted</th>
+                      <th className="p-2 font-bold text-on-surface-variant border-b border-outline-variant text-right">New Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {billingResult.inventory_deduction?.deductions && billingResult.inventory_deduction.deductions.length > 0 ? (
+                      billingResult.inventory_deduction.deductions.map((d, idx) => (
+                        <tr key={idx} className="border-b border-outline-variant/40 hover:bg-surface-container-high">
+                          <td className="p-2 font-bold text-on-surface">{d.ingredient}</td>
+                          <td className="p-2 text-right font-mono font-bold text-error">-{d.used} {d.unit}</td>
+                          <td className="p-2 text-right font-mono text-on-surface-variant">{d.new_stock} {d.unit}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="3" className="p-3 text-center text-on-surface-variant text-[11px]">
+                          No recipe ingredient deductions required for this order.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Modal Action Buttons */}
+            <div className="flex gap-2 pt-2">
+              <button
+                className="flex-1 py-2.5 bg-secondary text-on-secondary rounded-xl text-xs font-bold hover:bg-secondary-container hover:text-on-secondary-container transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                onClick={() => {
+                  setShowDeductionSummaryModal(false);
+                  setShowThermalReceipt(true);
+                }}
+              >
+                <span className="material-symbols-outlined text-sm">print</span>
+                Print Thermal Ticket
+              </button>
+              <button
+                className="flex-1 py-2.5 bg-surface-container-highest text-on-surface rounded-xl text-xs font-bold hover:bg-surface-variant transition-colors"
+                onClick={() => setShowDeductionSummaryModal(false)}
+              >
+                Close & Next Order
+              </button>
+            </div>
+          </div>
+        </div>
       )}
+
+      {/* Thermal Receipt Print Modal */}
+      <ThermalReceiptModal
+        isOpen={showThermalReceipt}
+        onClose={() => setShowThermalReceipt(false)}
+        billingData={billingResult}
+      />
     </div>
   );
 }

@@ -1,181 +1,154 @@
 import React, { useState, useEffect } from 'react';
 import { fetchDashboardMetrics } from '../api/client';
-import { TrendingUp, ShoppingBag, AlertTriangle, Users, DollarSign, PieChart } from 'lucide-react';
 
 export default function DashboardView() {
   const [metrics, setMetrics] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadData();
+    loadMetrics();
   }, []);
 
-  const loadData = async () => {
+  const loadMetrics = async () => {
     try {
-      const data = await fetchDashboardMetrics();
-      setMetrics(data);
+      const res = await fetchDashboardMetrics();
+      setMetrics(res);
     } catch (err) {
       console.error("Error loading dashboard metrics:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (loading) {
-    return <div className="wf-panel" style={{ textAlign: 'center', padding: '40px' }}>Loading Executive Dashboard metrics...</div>;
+  if (!metrics) {
+    return (
+      <div className="flex items-center justify-center h-64 text-on-surface-variant">
+        Loading Rajgad Executive Dashboard...
+      </div>
+    );
   }
 
-  const { summary, payment_breakdown, order_type_breakdown, low_stock_items } = metrics || {};
+  const { summary, payment_breakdown, order_type_breakdown, low_stock_items } = metrics;
 
   return (
-    <div>
-      {/* KPI Cards Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '20px' }}>
-        <div className="wf-card" style={{ borderColor: 'var(--wf-success)' }}>
-          <div className="flex-between" style={{ marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Total Gross Revenue</span>
-            <DollarSign size={18} style={{ color: 'var(--wf-success)' }} />
+    <div className="flex flex-col gap-6 h-[calc(100vh-2rem)] w-full bg-background rounded-xl border border-outline-variant p-6 overflow-y-auto shadow-lg">
+      {/* Top Header */}
+      <div className="flex justify-between items-center bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm">
+        <div>
+          <h1 className="font-bold text-2xl text-primary flex items-center gap-2">
+            <span className="material-symbols-outlined text-3xl">dashboard</span>
+            Rajgad Royal Executive BI Dashboard
+          </h1>
+          <p className="text-xs text-on-surface-variant">Live Revenue, Orders, Occupancy Rate & Inventory KPI Analytics</p>
+        </div>
+
+        <button
+          className="px-4 py-2 bg-primary text-on-primary rounded-lg text-xs font-bold flex items-center gap-2"
+          onClick={loadMetrics}
+        >
+          <span className="material-symbols-outlined text-base">refresh</span>
+          Refresh Live KPIs
+        </button>
+      </div>
+
+      {/* KPI Cards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-2">
+          <div className="flex justify-between items-center text-on-surface-variant text-xs font-bold">
+            <span>TOTAL REVENUE</span>
+            <span className="material-symbols-outlined text-secondary">payments</span>
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold', fontFamily: 'var(--font-mono)', color: 'var(--wf-success)' }}>
-            ₹{summary?.total_revenue?.toFixed(2) || '0.00'}
+          <div className="text-3xl font-bold font-mono text-secondary">₹{summary.total_revenue?.toFixed(2)}</div>
+          <div className="text-[11px] text-on-surface-variant">Billed Orders: {summary.billed_orders_count}</div>
+        </div>
+
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-2">
+          <div className="flex justify-between items-center text-on-surface-variant text-xs font-bold">
+            <span>AVERAGE ORDER VALUE (AOV)</span>
+            <span className="material-symbols-outlined text-primary">trending_up</span>
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)', marginTop: '4px' }}>
-            From {summary?.billed_orders_count || 0} completed bills
+          <div className="text-3xl font-bold font-mono text-primary">₹{summary.average_order_value?.toFixed(2)}</div>
+          <div className="text-[11px] text-on-surface-variant">Total Orders Placed: {summary.total_orders}</div>
+        </div>
+
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-2">
+          <div className="flex justify-between items-center text-on-surface-variant text-xs font-bold">
+            <span>TABLE OCCUPANCY RATE</span>
+            <span className="material-symbols-outlined text-tertiary-container">table_restaurant</span>
+          </div>
+          <div className="text-3xl font-bold font-mono text-on-tertiary-container">
+            {summary.total_tables > 0 ? ((summary.occupied_tables / summary.total_tables) * 100).toFixed(0) : 0}%
+          </div>
+          <div className="text-[11px] text-on-surface-variant">
+            {summary.occupied_tables} of {summary.total_tables} Tables Occupied
           </div>
         </div>
 
-        <div className="wf-card" style={{ borderColor: 'var(--wf-accent)' }}>
-          <div className="flex-between" style={{ marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Total Orders Placed</span>
-            <ShoppingBag size={18} style={{ color: 'var(--wf-accent)' }} />
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-2">
+          <div className="flex justify-between items-center text-on-surface-variant text-xs font-bold">
+            <span>LOW STOCK ALERTS</span>
+            <span className="material-symbols-outlined text-error">warning</span>
           </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold', fontFamily: 'var(--font-mono)' }}>
-            {summary?.total_orders || 0}
-          </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)', marginTop: '4px' }}>
-            Kiosk & Cashier POS combined
+          <div className="text-3xl font-bold font-mono text-error">{summary.low_stock_alerts_count}</div>
+          <div className="text-[11px] text-on-surface-variant">Ingredients Below Minimum Stock Limit</div>
+        </div>
+      </div>
+
+      {/* Analytics Panels Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Payment Methods Revenue Breakdown */}
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-4">
+          <h3 className="font-bold text-lg text-on-surface flex items-center gap-2 border-b border-outline-variant pb-3">
+            <span className="material-symbols-outlined text-secondary">pie_chart</span>
+            Revenue by Payment Method
+          </h3>
+
+          <div className="space-y-3">
+            {Object.entries(payment_breakdown || {}).map(([mode, amt]) => (
+              <div key={mode} className="flex justify-between items-center p-3 rounded-lg border border-outline-variant bg-surface-container-low">
+                <span className="font-bold text-sm text-on-surface">{mode}</span>
+                <span className="font-mono font-bold text-base text-primary">₹{amt.toFixed(2)}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="wf-card">
-          <div className="flex-between" style={{ marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Avg Order Value (AOV)</span>
-            <TrendingUp size={18} style={{ color: 'var(--wf-warning)' }} />
-          </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold', fontFamily: 'var(--font-mono)' }}>
-            ₹{summary?.average_order_value?.toFixed(2) || '0.00'}
-          </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)', marginTop: '4px' }}>
-            Average basket size per customer
-          </div>
-        </div>
+        {/* Order Type Distribution */}
+        <div className="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-sm space-y-4">
+          <h3 className="font-bold text-lg text-on-surface flex items-center gap-2 border-b border-outline-variant pb-3">
+            <span className="material-symbols-outlined text-primary">bar_chart</span>
+            Order Type Breakdown
+          </h3>
 
-        <div className="wf-card" style={{ borderColor: summary?.low_stock_alerts_count > 0 ? 'var(--wf-danger)' : 'var(--wf-border)' }}>
-          <div className="flex-between" style={{ marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Low Stock Alerts</span>
-            <AlertTriangle size={18} style={{ color: summary?.low_stock_alerts_count > 0 ? 'var(--wf-danger)' : 'var(--wf-text-muted)' }} />
-          </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold', fontFamily: 'var(--font-mono)', color: summary?.low_stock_alerts_count > 0 ? 'var(--wf-danger)' : 'var(--wf-text-main)' }}>
-            {summary?.low_stock_alerts_count || 0}
-          </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)', marginTop: '4px' }}>
-            Raw materials below minimum threshold
-          </div>
-        </div>
-
-        <div className="wf-card">
-          <div className="flex-between" style={{ marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)', textTransform: 'uppercase', fontWeight: 'bold' }}>Table Occupancy</span>
-            <Users size={18} style={{ color: 'var(--wf-accent)' }} />
-          </div>
-          <div style={{ fontSize: '1.8rem', fontWeight: 'bold', fontFamily: 'var(--font-mono)' }}>
-            {summary?.occupied_tables || 0} / {summary?.total_tables || 0}
-          </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--wf-text-muted)', marginTop: '4px' }}>
-            Active occupied restaurant tables
+          <div className="space-y-3">
+            {Object.entries(order_type_breakdown || {}).map(([type, count]) => (
+              <div key={type} className="flex justify-between items-center p-3 rounded-lg border border-outline-variant bg-surface-container-low">
+                <span className="font-bold text-sm text-on-surface">{type}</span>
+                <span className="font-mono font-bold text-base text-secondary">{count} Orders</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="view-grid-2">
-        {/* Payment & Channel Breakdown */}
-        <div>
-          <div className="wf-panel">
-            <div className="wf-panel-header">
-              <span className="wf-title"><PieChart size={18} /> Sales Channel & Payment Method Distribution</span>
-            </div>
+      {/* Urgent Low Stock Alerts Banner */}
+      {low_stock_items?.length > 0 && (
+        <div className="bg-error-container/20 border border-error p-6 rounded-xl shadow-sm space-y-3">
+          <h3 className="font-bold text-lg text-error flex items-center gap-2">
+            <span className="material-symbols-outlined">warning</span>
+            Urgent Reorder Required: Ingredients Below Minimum Limit
+          </h3>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div>
-                <h5 style={{ fontSize: '0.85rem', color: 'var(--wf-text-muted)', marginBottom: '8px' }}>Payment Mode Revenue:</h5>
-                {Object.keys(payment_breakdown || {}).length === 0 ? (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)' }}>No completed sales payments yet.</div>
-                ) : (
-                  Object.entries(payment_breakdown).map(([mode, val]) => (
-                    <div key={mode} className="flex-between" style={{ padding: '6px 0', borderBottom: '1px solid var(--wf-border)', fontSize: '0.85rem' }}>
-                      <span className="wf-badge wf-badge-info">{mode}</span>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>₹{val.toFixed(2)}</span>
-                    </div>
-                  ))
-                )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {low_stock_items.map((item) => (
+              <div key={item.id} className="bg-surface-container-lowest p-3 rounded-lg border border-error/40 flex justify-between items-center text-xs">
+                <div>
+                  <div className="font-bold text-on-surface">{item.name}</div>
+                  <div className="font-mono text-error font-bold">Current: {item.current_stock} {item.unit}</div>
+                </div>
+                <div className="text-[10px] text-on-surface-variant font-mono">Min: {item.min_stock} {item.unit}</div>
               </div>
-
-              <div>
-                <h5 style={{ fontSize: '0.85rem', color: 'var(--wf-text-muted)', marginBottom: '8px' }}>Order Types Count:</h5>
-                {Object.keys(order_type_breakdown || {}).length === 0 ? (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--wf-text-muted)' }}>No order channel stats yet.</div>
-                ) : (
-                  Object.entries(order_type_breakdown).map(([type, cnt]) => (
-                    <div key={type} className="flex-between" style={{ padding: '6px 0', borderBottom: '1px solid var(--wf-border)', fontSize: '0.85rem' }}>
-                      <span className="wf-badge wf-badge-normal">{type}</span>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{cnt} Orders</span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-
-        {/* Low Stock Warning List */}
-        <div>
-          <div className="wf-panel">
-            <div className="wf-panel-header">
-              <span className="wf-title" style={{ color: low_stock_items?.length > 0 ? 'var(--wf-danger)' : 'var(--wf-text-main)' }}>
-                <AlertTriangle size={18} /> Real-Time Inventory Stock Warnings
-              </span>
-              <span className="wf-badge wf-badge-danger">{low_stock_items?.length || 0} Alerts</span>
-            </div>
-
-            {low_stock_items?.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '20px 10px', color: 'var(--wf-success)', border: '1px dashed var(--wf-success)', borderRadius: '6px' }}>
-                ✅ All inventory stock levels are operating above minimum threshold!
-              </div>
-            ) : (
-              <div className="wf-table-container">
-                <table className="wf-table">
-                  <thead>
-                    <tr>
-                      <th>Ingredient</th>
-                      <th>Current Stock</th>
-                      <th>Min Required</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {low_stock_items.map(item => (
-                      <tr key={item.id}>
-                        <td style={{ fontWeight: 'bold', color: 'var(--wf-danger)' }}>{item.name}</td>
-                        <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>{item.current_stock} {item.unit}</td>
-                        <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--wf-text-muted)' }}>{item.min_stock} {item.unit}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

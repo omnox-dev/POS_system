@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BistroFlow - Financial &amp; Operational Reports</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#ffb783",
+                        "on-tertiary-container": "#16a558",
+                        "primary-fixed-dim": "#bdc7d9",
+                        "inverse-primary": "#bdc7d9",
+                        "surface-container-high": "#e7e8e9",
+                        "tertiary-fixed": "#7efba4",
+                        "background": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "on-primary-fixed": "#121c2a",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f8f9fa",
+                        "primary-container": "#1f2937",
+                        "outline-variant": "#c5c6cc",
+                        "on-background": "#191c1d",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#61de8a",
+                        "on-secondary-container": "#663100",
+                        "secondary": "#944a00",
+                        "secondary-fixed": "#ffdcc5",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#301400",
+                        "surface-tint": "#555f6f",
+                        "on-tertiary-fixed-variant": "#005228",
+                        "on-tertiary-fixed": "#00210c",
+                        "on-secondary-fixed-variant": "#713700",
+                        "on-primary-container": "#8690a1",
+                        "surface-container": "#edeeef",
+                        "surface-dim": "#d9dadb",
+                        "primary-fixed": "#d9e3f6",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#44474c",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#003015",
+                        "on-surface": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary-container": "#fc8f34",
+                        "inverse-surface": "#2e3132",
+                        "outline": "#75777c",
+                        "tertiary": "#001908",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary": "#0a1422",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f8f9fa",
+                        "on-primary-fixed-variant": "#3d4756"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "1rem",
+                        "margin-mobile": "1rem",
+                        "margin-desktop": "2rem",
+                        "stack-lg": "1.5rem",
+                        "gutter": "1rem",
+                        "stack-sm": "0.5rem",
+                        "touch-target-min": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-bold": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-bold": ["14px", { "lineHeight": "20px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar (from JSON) -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container py-stack-lg px-stack-md gap-stack-sm z-50">
+<!-- Header -->
+<div class="flex items-center gap-stack-md px-3 mb-stack-md">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-md shrink-0">
+<img alt="BistroFlow Logo" class="w-full h-full object-cover rounded-lg" data-alt="A stylized minimalist vector logo of a chef's hat or cloche, rendered in pure white against a solid dark primary color background. The design is sleek, modern, and instantly recognizable as a hospitality brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr_8VBMCdN3ePOd9iytn6ypc7wW6skuPxuZku_ngy_VoXPo0bPgvkYMM5Fq6SqAME8TgA9RgJPwQxAs9VSr73F1f3-IyyePHBW3SfudClLCm2_aJeS5oFaANPV_H6rs_lM3VgjD_QWCj8SGSYU_Lc-enbWac8uRrJSjbdndf5Nt1hFx2tWTwv9Uz-AyizJq1yFtPJCaMIdKM7hsEqX-plPO8-zHhQjp_Od3W4yAZYWsNiEkRWzXwHM"/>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">BistroFlow</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Admin Terminal</p>
+</div>
+</div>
+<!-- Main Nav Links -->
+<div class="flex-1 flex flex-col gap-1 mt-stack-md">
+<!-- POS (Inactive) -->
+<a class="flex items-center gap-stack-md text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">point_of_sale</span>
+<span class="font-label-bold text-label-bold">POS</span>
+</a>
+<!-- Inventory (Inactive) -->
+<a class="flex items-center gap-stack-md text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">inventory_2</span>
+<span class="font-label-bold text-label-bold">Inventory</span>
+</a>
+<!-- Dashboard (Inactive) -->
+<a class="flex items-center gap-stack-md text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</a>
+<!-- Reports (Active) -->
+<a class="flex items-center gap-stack-md bg-secondary-container text-on-secondary-container rounded-lg p-3 active:scale-98 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="font-label-bold text-label-bold">Reports</span>
+</a>
+</div>
+<!-- Footer Links -->
+<div class="flex flex-col gap-1 mt-auto border-t border-outline-variant pt-stack-sm">
+<a class="flex items-center gap-stack-md text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-bold text-label-bold">Settings</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant p-3 hover:bg-surface-container-highest rounded-lg transition-all active:scale-98 duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">lock_open</span>
+<span class="font-label-bold text-label-bold">Switch User</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 md:ml-64 bg-background min-h-screen">
+<!-- Top App Bar (Mobile Nav Support + Header Actions) -->
+<header class="bg-surface-container-lowest docked full-width top-0 border-b border-outline-variant flat no shadows flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-touch-target-min sticky z-40">
+<!-- Mobile Menu Toggle & Brand -->
+<div class="flex md:hidden items-center gap-stack-md">
+<button class="text-primary cursor-pointer active:scale-95 transition-transform p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-primary">BistroFlow</span>
+</div>
+<!-- Contextual Header: Reports View -->
+<div class="hidden md:flex items-center">
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Financial &amp; Operational Reports</h2>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-stack-sm">
+<!-- Export Button -->
+<button class="hidden sm:flex items-center gap-2 bg-primary text-on-primary font-label-bold text-label-bold px-4 py-2 rounded-lg hover:bg-primary/90 active:scale-95 transition-all h-[40px]">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Export CSV
+                </button>
+<button class="sm:hidden flex items-center justify-center bg-primary text-on-primary w-[40px] h-[40px] rounded-lg active:scale-95 transition-all">
+<span class="material-symbols-outlined">download</span>
+</button>
+<!-- TopNavBar Icons from JSON -->
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 transition-transform p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 transition-transform p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">dns</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden ml-2 cursor-pointer active:scale-95 transition-transform">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a restaurant manager in a modern, brightly lit office environment. The lighting is crisp and clean, reflecting a professional administrative setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCc_GT966paGgSVXtEkvzi6kX8e-6KLBrWigPf1la39uDTW-3bhcJG1YY0Do5ZGuQqBSLephYPidX-YS6p6gZV6S2uJHxP9M4j87v61FQ_C_izVpRnSF-LdQAKsoFgV6gTNy4n6jC-a2lB4EpPObT7CDIg97Tlgizy8dkO73MKZwB3zT4LkjqsCCKpEu0rFRw_UIpU5ZYijdpcAQ78c03528nN1RQyv2DDoatJcrsOD6dvw5668XH2"/>
+</div>
+</div>
+</header>
+<!-- Reports Canvas -->
+<div class="p-margin-mobile md:p-margin-desktop space-y-stack-lg max-w-7xl mx-auto">
+<!-- Context & Filters -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-stack-md bg-surface-container-lowest p-4 rounded-xl border border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline">calendar_month</span>
+<select class="bg-transparent border-none text-on-surface font-label-bold text-label-bold focus:ring-0 p-0 cursor-pointer">
+<option>This Month (October 2023)</option>
+<option>Last Month (September 2023)</option>
+<option>Q3 2023</option>
+<option>Year to Date</option>
+</select>
+</div>
+<div class="flex items-center gap-stack-sm w-full sm:w-auto">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Last updated: Today, 08:30 AM</span>
+</div>
+</div>
+<!-- Navigation Tabs (Bento-style wrapper) -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden flex flex-nowrap overflow-x-auto custom-scrollbar">
+<button class="flex-1 min-w-[180px] px-6 py-4 flex flex-col items-center gap-1 border-b-2 border-primary bg-primary/5 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+<span class="font-label-bold text-label-bold">Financial Summary</span>
+</button>
+<button class="flex-1 min-w-[180px] px-6 py-4 flex flex-col items-center gap-1 border-b-2 border-transparent text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">restaurant_menu</span>
+<span class="font-label-bold text-label-bold">Top Dishes</span>
+</button>
+<button class="flex-1 min-w-[180px] px-6 py-4 flex flex-col items-center gap-1 border-b-2 border-transparent text-on-surface-variant hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">inventory</span>
+<span class="font-label-bold text-label-bold">Stock &amp; Wastage</span>
+</button>
+</div>
+<!-- Tab 1 Content: Financial Summary -->
+<div class="space-y-stack-lg">
+<!-- KPI Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-stack-md">
+<!-- Gross Sales -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Gross Sales</span>
+<span class="material-symbols-outlined text-outline">payments</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-surface">$124,500.00</div>
+<div class="flex items-center gap-1 text-on-tertiary-container mt-1">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="font-label-sm text-label-sm font-semibold">+12.5% vs last period</span>
+</div>
+</div>
+<!-- Discounts -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Discounts Applied</span>
+<span class="material-symbols-outlined text-outline">loyalty</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-surface">-$3,240.50</div>
+<div class="flex items-center gap-1 text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-[16px]">horizontal_rule</span>
+<span class="font-label-sm text-label-sm">2.6% of gross sales</span>
+</div>
+</div>
+<!-- Taxes (GST) -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Taxes (GST)</span>
+<span class="material-symbols-outlined text-outline">receipt_long</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-surface">-$12,125.95</div>
+<div class="flex items-center gap-1 text-on-surface-variant mt-1">
+<span class="material-symbols-outlined text-[16px]">horizontal_rule</span>
+<span class="font-label-sm text-label-sm">10% standard rate</span>
+</div>
+</div>
+<!-- Net Revenue (Highlight) -->
+<div class="bg-secondary-container p-6 rounded-xl border border-secondary/20 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<span class="font-label-sm text-label-sm text-on-secondary-container uppercase tracking-wider font-bold">Net Revenue</span>
+<span class="material-symbols-outlined text-on-secondary-container">monitoring</span>
+</div>
+<div class="font-headline-lg text-headline-lg text-on-secondary-container font-extrabold">$109,133.55</div>
+<div class="flex items-center gap-1 text-on-secondary-container/80 mt-1">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="font-label-sm text-label-sm font-semibold">+14.2% vs last period</span>
+</div>
+</div>
+</div>
+<!-- Detailed Ledger Table -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md text-on-surface">Daily Revenue Ledger</h3>
+<button class="text-primary font-label-bold text-label-bold hover:underline">View Full Ledger</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[800px]">
+<thead>
+<tr class="bg-surface-bright border-b border-outline-variant">
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Date</th>
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold text-right">Gross Sales</th>
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold text-right">Discounts</th>
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold text-right">Tax (GST)</th>
+<th class="px-6 py-3 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold text-right">Net Revenue</th>
+</tr>
+</thead>
+<tbody class="font-data-mono text-data-mono text-on-surface">
+<!-- Zebra Striping applied via CSS class pattern -->
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest/50">
+<td class="px-6 py-4 font-body-md">Oct 24, 2023</td>
+<td class="px-6 py-4 text-right">$4,250.00</td>
+<td class="px-6 py-4 text-right text-error">-$120.00</td>
+<td class="px-6 py-4 text-right">-$413.00</td>
+<td class="px-6 py-4 text-right font-bold text-on-tertiary-container">$3,717.00</td>
+</tr>
+<tr class="bg-surface-bright border-b border-outline-variant hover:bg-surface-container-lowest/50">
+<td class="px-6 py-4 font-body-md">Oct 23, 2023</td>
+<td class="px-6 py-4 text-right">$3,890.50</td>
+<td class="px-6 py-4 text-right text-error">-$85.00</td>
+<td class="px-6 py-4 text-right">-$380.55</td>
+<td class="px-6 py-4 text-right font-bold text-on-tertiary-container">$3,424.95</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest/50">
+<td class="px-6 py-4 font-body-md">Oct 22, 2023 (Sun)</td>
+<td class="px-6 py-4 text-right">$6,100.00</td>
+<td class="px-6 py-4 text-right text-error">-$250.00</td>
+<td class="px-6 py-4 text-right">-$585.00</td>
+<td class="px-6 py-4 text-right font-bold text-on-tertiary-container flex justify-end items-center gap-1">
+                                        $5,265.00 <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+</td>
+</tr>
+<tr class="bg-surface-bright border-b border-outline-variant hover:bg-surface-container-lowest/50">
+<td class="px-6 py-4 font-body-md">Oct 21, 2023 (Sat)</td>
+<td class="px-6 py-4 text-right">$7,450.00</td>
+<td class="px-6 py-4 text-right text-error">-$150.00</td>
+<td class="px-6 py-4 text-right">-$730.00</td>
+<td class="px-6 py-4 text-right font-bold text-on-tertiary-container flex justify-end items-center gap-1">
+                                        $6,570.00 <span class="material-symbols-outlined text-[16px]">arrow_upward</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest/50">
+<td class="px-6 py-4 font-body-md">Oct 20, 2023 (Fri)</td>
+<td class="px-6 py-4 text-right">$5,200.00</td>
+<td class="px-6 py-4 text-right text-error">-$90.00</td>
+<td class="px-6 py-4 text-right">-$511.00</td>
+<td class="px-6 py-4 text-right font-bold text-on-tertiary-container">$4,599.00</td>
+</tr>
+</tbody>
+<tfoot class="bg-surface-container border-t-2 border-outline font-data-mono font-bold">
+<tr>
+<td class="px-6 py-4 font-body-md">Total (Displayed)</td>
+<td class="px-6 py-4 text-right">$26,890.50</td>
+<td class="px-6 py-4 text-right text-error">-$695.00</td>
+<td class="px-6 py-4 text-right">-$2,619.55</td>
+<td class="px-6 py-4 text-right text-on-secondary-container text-lg">$23,575.95</td>
+</tr>
+</tfoot>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+<style>
+        /* Hide scrollbar for tab navigation but allow scrolling */
+        .custom-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .custom-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</body></html>

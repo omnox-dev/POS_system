@@ -140,6 +140,19 @@ def get_orders(db: Session, status: str = None):
     return query.order_by(models.Order.created_at.desc()).all()
 
 def create_order(db: Session, order_data: schemas.OrderCreate):
+    # Check if dine-in table already has an active (unbilled) order
+    if order_data.table_id:
+        existing_order = db.query(models.Order).filter(
+            models.Order.table_id == order_data.table_id,
+            models.Order.status != models.OrderStatus.BILLED.value
+        ).order_by(models.Order.created_at.desc()).first()
+
+        if existing_order:
+            # Table is currently occupied: append items to existing open bill!
+            append_items_to_order(db, existing_order.id, order_data.items)
+            db.refresh(existing_order)
+            return existing_order
+
     order_count = db.query(models.Order).count() + 1
     order_number = f"ORD-#{5000 + order_count}"
 
@@ -182,18 +195,13 @@ def create_order(db: Session, order_data: schemas.OrderCreate):
         table = db.query(models.RestaurantTable).filter(models.RestaurantTable.id == order_data.table_id).first()
         if table:
             table.status = models.TableStatus.OCCUPIED.value
+            db.commit()
+            table.current_order_id = db_order.id
 
     db.commit()
     db.refresh(db_order)
-
-    # Link order ID to table
-    if order_data.table_id:
-        table = db.query(models.RestaurantTable).filter(models.RestaurantTable.id == order_data.table_id).first()
-        if table:
-            table.current_order_id = db_order.id
-            db.commit()
-
     return db_order
+
 
 def append_items_to_order(db: Session, order_id: int, new_items: list[schemas.OrderItemCreate]):
     order = db.query(models.Order).filter(models.Order.id == order_id).first()

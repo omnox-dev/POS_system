@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BistroFlow KDS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#ffb783",
+                        "on-tertiary-container": "#16a558",
+                        "primary-fixed-dim": "#bdc7d9",
+                        "inverse-primary": "#bdc7d9",
+                        "surface-container-high": "#e7e8e9",
+                        "tertiary-fixed": "#7efba4",
+                        "background": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "on-primary-fixed": "#121c2a",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#f8f9fa",
+                        "primary-container": "#1f2937",
+                        "outline-variant": "#c5c6cc",
+                        "on-background": "#191c1d",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#61de8a",
+                        "on-secondary-container": "#663100",
+                        "secondary": "#944a00",
+                        "secondary-fixed": "#ffdcc5",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#301400",
+                        "surface-tint": "#555f6f",
+                        "on-tertiary-fixed-variant": "#005228",
+                        "on-tertiary-fixed": "#00210c",
+                        "on-secondary-fixed-variant": "#713700",
+                        "on-primary-container": "#8690a1",
+                        "surface-container": "#edeeef",
+                        "surface-dim": "#d9dadb",
+                        "primary-fixed": "#d9e3f6",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#44474c",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#003015",
+                        "on-surface": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary-container": "#fc8f34",
+                        "inverse-surface": "#2e3132",
+                        "outline": "#75777c",
+                        "tertiary": "#001908",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary": "#0a1422",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f8f9fa",
+                        "on-primary-fixed-variant": "#3d4756"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "1rem",
+                        "margin-mobile": "1rem",
+                        "margin-desktop": "2rem",
+                        "stack-lg": "1.5rem",
+                        "gutter": "1rem",
+                        "stack-sm": "0.5rem",
+                        "touch-target-min": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-bold": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-bold": ["14px", { "lineHeight": "20px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .kot-card {
+            container-type: inline-size;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 165, 88, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(22, 165, 88, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 165, 88, 0); }
+        }
+        .animate-pulse-green {
+            animation: pulse-green 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-screen flex flex-col font-sans overflow-hidden">
+<!-- TopNavBar Shell -->
+<header class="bg-surface-container-lowest flex justify-between items-center w-full px-margin-desktop h-touch-target-min border-b border-outline-variant flat no shadows docked full-width top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary">BistroFlow KDS</span>
+<div class="flex items-center bg-surface-container-highest px-3 py-1 rounded-full gap-2">
+<div class="w-3 h-3 rounded-full bg-on-tertiary-container animate-pulse-green"></div>
+<span class="font-label-bold text-label-bold text-on-surface">Live WS Connected</span>
+</div>
+</div>
+<div class="flex gap-4 h-full">
+<div class="flex items-center justify-center px-4 cursor-pointer hover:bg-surface-container-high transition-colors h-full">
+<span class="material-symbols-outlined text-on-surface-variant">kitchen</span>
+</div>
+<div class="flex items-center justify-center px-4 cursor-pointer hover:bg-surface-container-high transition-colors h-full border-b-2 border-primary pb-1">
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+</div>
+<div class="flex items-center justify-center px-4 cursor-pointer hover:bg-surface-container-high transition-colors h-full">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</div>
+<div class="flex items-center justify-center px-4 cursor-pointer hover:bg-surface-container-high transition-colors h-full">
+<img alt="User profile" class="w-8 h-8 rounded-full object-cover" data-alt="A professional headshot of a restaurant kitchen manager, shot in bright light mode studio lighting, clean white background, sharp focus, corporate modern style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAK_CdOPOejgJNSlTSJY1iO1O0-Xc_f_FjYVROjiQUnWleRHHhJL1CgN1JT28ia5mo95R0Lz4tsz8mH3MNh7sStB5_75z1XMHJmCdtCixt1gf8e7PBrvgoHCGR3O4vimf7U6V-H3KL07q0f0LBTaAKLUTCER1eMNWuBRRi0CBuPE1nc3AQbbbHBTSXN97b84pDRETQ5uEIWMOc9ZG7pC3TWG3Gl0dd9rBDumbDHLH2uAOeqZvCBa3Cq"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-desktop bg-surface-container-low">
+<!-- Controls Bar -->
+<div class="flex justify-between items-center mb-stack-lg">
+<h1 class="font-headline-lg text-headline-lg text-on-background">Live Orders</h1>
+<div class="flex gap-stack-sm">
+<button class="bg-surface-container-lowest border border-outline px-4 h-touch-target-min rounded flex items-center gap-2 hover:bg-surface-variant transition-colors font-label-bold text-label-bold text-on-surface">
+<span class="material-symbols-outlined text-on-surface-variant">filter_list</span>
+                    All Stations
+                </button>
+</div>
+</div>
+<!-- KOT Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+<!-- Card 1: NEW (Red Border) -->
+<article class="kot-card bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm flex flex-col relative overflow-hidden h-[400px]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="p-stack-md flex justify-between items-start border-b border-surface-variant ml-1">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-bold text-label-bold text-error">NEW ORDER</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant">#1042</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface">Table 12</div>
+</div>
+<div class="bg-error-container px-3 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-error" style="font-size: 16px;">timer</span>
+<span class="font-data-mono text-data-mono font-bold text-error">02:15m</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-stack-md ml-1 space-y-4">
+<div class="flex gap-3">
+<div class="font-headline-md text-headline-md font-bold text-primary">2x</div>
+<div class="flex-1">
+<div class="font-body-lg text-body-lg text-on-surface font-semibold">Truffle Risotto</div>
+<div class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">No Mushrooms</div>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="font-headline-md text-headline-md font-bold text-primary">1x</div>
+<div class="flex-1">
+<div class="font-body-lg text-body-lg text-on-surface font-semibold">Wagyu Burger</div>
+<div class="bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded inline-block font-label-bold text-label-bold text-sm mt-1">Medium Rare</div>
+<div class="font-body-md text-body-md text-on-surface-variant text-sm mt-1 text-secondary">Note: Extra Spicy mayo on side</div>
+</div>
+</div>
+</div>
+<div class="p-stack-md border-t border-surface-variant ml-1 bg-surface-bright">
+<button class="w-full bg-primary text-on-primary h-touch-target-min rounded font-label-bold text-label-bold hover:bg-primary-container transition-colors active:scale-95">
+                        Start Cooking
+                    </button>
+</div>
+</article>
+<!-- Card 2: PREPARING (Yellow Border) -->
+<article class="kot-card bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm flex flex-col relative overflow-hidden h-[400px]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary-container"></div>
+<div class="p-stack-md flex justify-between items-start border-b border-surface-variant ml-1">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-bold text-label-bold text-secondary-container">PREPARING</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant">#1038</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface">Table 05</div>
+</div>
+<div class="bg-surface-variant px-3 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 16px;">timer</span>
+<span class="font-data-mono text-data-mono font-bold text-on-surface-variant">12:40m</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-stack-md ml-1 space-y-4">
+<div class="flex gap-3">
+<div class="font-headline-md text-headline-md font-bold text-primary">4x</div>
+<div class="flex-1">
+<div class="font-body-lg text-body-lg text-on-surface font-semibold">House Pasta</div>
+<div class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">Gluten Free Penne</div>
+</div>
+</div>
+</div>
+<div class="p-stack-md border-t border-surface-variant ml-1 bg-surface-bright">
+<button class="w-full bg-secondary-container text-on-secondary-container h-touch-target-min rounded font-label-bold text-label-bold hover:bg-secondary transition-colors active:scale-95">
+                        Mark Ready
+                    </button>
+</div>
+</article>
+<!-- Card 3: READY (Green Border) -->
+<article class="kot-card bg-surface-container-lowest rounded-lg border border-outline-variant shadow-sm flex flex-col relative overflow-hidden h-[400px]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-on-tertiary-container"></div>
+<div class="p-stack-md flex justify-between items-start border-b border-surface-variant ml-1">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-bold text-label-bold text-on-tertiary-container">READY FOR PICKUP</span>
+<span class="font-data-mono text-data-mono text-on-surface-variant">#1035</span>
+</div>
+<div class="font-headline-md text-headline-md text-on-surface">Bar Seat 2</div>
+</div>
+<div class="bg-surface-variant px-3 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 16px;">timer</span>
+<span class="font-data-mono text-data-mono font-bold text-on-surface-variant">18:22m</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-stack-md ml-1 space-y-4">
+<div class="flex gap-3 line-through text-outline">
+<div class="font-headline-md text-headline-md font-bold">1x</div>
+<div class="flex-1">
+<div class="font-body-lg text-body-lg font-semibold">Ceasar Salad</div>
+</div>
+</div>
+<div class="flex gap-3 line-through text-outline">
+<div class="font-headline-md text-headline-md font-bold">1x</div>
+<div class="flex-1">
+<div class="font-body-lg text-body-lg font-semibold">Garlic Bread</div>
+</div>
+</div>
+</div>
+<div class="p-stack-md border-t border-surface-variant ml-1 bg-surface-bright">
+<button class="w-full bg-surface-container-high text-on-surface-variant border border-outline-variant h-touch-target-min rounded font-label-bold text-label-bold hover:bg-surface-variant transition-colors active:scale-95">
+                        Clear Ticket
+                    </button>
+</div>
+</article>
+</div>
+</main>
+</body></html>
