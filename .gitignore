@@ -40,3 +40,15 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Binary & Compressed Archives
+*.zip
+*.tar.gz
+*.rar
+
+# Documents & Exports
+*.pdf
+
+# Design Mockups & Stitch Exports
+stitch_stitch_restaurant_pos_system/
+
